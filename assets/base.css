@@ -1,0 +1,29 @@
+html,
+body,
+#__nuxt {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: var(--font-family);
+  background-color: var(--surface-0);
+  color: var(--text-color);
+}
+
+a,
+a:visited {
+  color: var(--green-400);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--green-600);
+}
+
+button.p-button.p-component:disabled {
+  cursor: not-allowed;
+}
