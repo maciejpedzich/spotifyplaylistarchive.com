@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     'primeicons/primeicons.css',
     '~~/assets/base.css'
   ],
+  modules: ['@vueuse/nuxt'],
   vite: {
     plugins: [eslintPlugin()]
   }
