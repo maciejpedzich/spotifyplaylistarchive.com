@@ -28,9 +28,6 @@ export default defineEventHandler(async (event) => {
     until
   });
 
-  if (commitListings.length === 0)
-    throw new Error('There are no archive entries of this playlist');
-
   const snapshotFileContents = await Promise.all(
     commitListings.map(({ sha }) =>
       $fetch<{ snapshot_id: string }>(
@@ -41,14 +38,14 @@ export default defineEventHandler(async (event) => {
   );
   const possiblyDuplicateSnapshotEntries = snapshotFileContents.map(
     ({ snapshot_id }, index) => ({
-      snapshot_id,
-      commit_sha: commitListings[index].sha,
-      date_captured: commitListings[index].commit.author.date
+      snapshotId: snapshot_id,
+      commitSha: commitListings[index].sha,
+      dateCaptured: commitListings[index].commit.author.date
     })
   );
   const uniqueSnapshotEntries = filterByUniqueKeyValue(
     possiblyDuplicateSnapshotEntries,
-    'snapshot_id'
+    'snapshotId'
   );
 
   return uniqueSnapshotEntries;
