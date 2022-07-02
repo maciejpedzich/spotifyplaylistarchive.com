@@ -9,7 +9,7 @@ import Toast from 'primevue/toast';
       <NuxtPage />
     </main>
     <ClientOnly>
-      <Toast position="bottom-right" />
+      <Toast position="bottom-center" />
     </ClientOnly>
   </div>
 </template>
