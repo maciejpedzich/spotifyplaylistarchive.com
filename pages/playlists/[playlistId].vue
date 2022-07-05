@@ -47,7 +47,7 @@ const isNotFoundError = computed(
       </span>
       <span v-else>Something went wrong while fetching playlist's data</span>
     </p>
-    <template v-else>
+    <template v-else-if="data">
       <h1 class="text-3xl mb-3">
         <NuxtLink :to="data.url" target="_blank">
           {{ data.unique_name }}
