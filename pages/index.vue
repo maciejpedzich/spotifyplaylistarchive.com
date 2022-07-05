@@ -24,7 +24,7 @@ const openSnapshotCalendar = async () => {
 
 <template>
   <NuxtLayout name="centered-content">
-    <h1 class="mb-0 text-5xl">Spotify Playlist Archive</h1>
+    <h1 class="m-0 text-5xl">Spotify Playlist Archive</h1>
     <div class="flex flex-column justify-content-center text-center">
       <p class="text-xl text-gray-300">
         Browse past versions of thousands of playlists saved over time
