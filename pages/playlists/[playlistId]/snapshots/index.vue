@@ -24,18 +24,19 @@ const route = useRoute();
 const playlistId = route.params.playlistId;
 
 const isPortableScreen = useMediaQuery('(max-width: 768px)');
+
 const calendarDisplayDate = ref(new Date());
 const queryMonth = ref(calendarDisplayDate.value.getMonth());
 const queryYear = ref(calendarDisplayDate.value.getFullYear());
 
+const hoursOffset = -(calendarDisplayDate.value.getTimezoneOffset() / 60);
 const sinceDateParam = computed(() =>
-  new Date(queryYear.value, queryMonth.value, 1).toISOString().substring(0, 10)
+  new Date(queryYear.value, queryMonth.value, 1, hoursOffset).toISOString()
 );
 const untilDateParam = computed(() =>
-  new Date(queryYear.value, queryMonth.value + 1, 1)
-    .toISOString()
-    .substring(0, 10)
+  new Date(queryYear.value, queryMonth.value + 1, 1, hoursOffset).toISOString()
 );
+
 const queryString = computed(() => {
   const queryParamsObj = new URLSearchParams();
 
