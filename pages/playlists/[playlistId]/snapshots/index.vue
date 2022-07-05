@@ -62,7 +62,7 @@ const {
 const snapshotLinkMap = computed<Record<string, string>>(() =>
   (calendarEntries.value || []).reduce((map, entry) => {
     const dateCapturedKey = entry.dateCaptured.substring(0, 10);
-    map[dateCapturedKey] = `./snapshots/${entry.commitSha}`;
+    map[dateCapturedKey] = `./snapshots/show/${entry.commitSha}`;
 
     return map;
   }, {})
