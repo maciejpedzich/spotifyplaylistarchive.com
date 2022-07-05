@@ -1,4 +1,4 @@
-import { Owner } from './owner';
+import { User } from './user';
 
 export interface Track {
   added_at: string;
@@ -6,7 +6,7 @@ export interface Track {
     name: string;
     url: string;
   };
-  artists: Owner[];
+  artists: User[];
   duration_ms: number;
   name: string;
   url: string;

@@ -1,4 +1,4 @@
-export interface Owner {
+export interface User {
   name: string;
   url: string;
 }
