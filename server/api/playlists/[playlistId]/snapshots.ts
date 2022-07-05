@@ -5,9 +5,13 @@ import { filterByUniqueKeyValue } from '~~/server/utils/filterByUniqueKeyValue';
 
 export default defineEventHandler(async (event) => {
   const query = useQuery(event);
-  const sinceDateParam = (query.sinceDate as unknown as string) || '2021-12-01';
+
+  const sinceDateParam =
+    (query.sinceDate as unknown as string) || '2021-12-01T00:00:00.000Z';
+
   const untilDateParam =
     (query.untilDate as unknown as string) || new Date().toISOString();
+
   const DECEMBER_1ST_2021_TIMESTAMP = 16383168e5;
 
   const since = new Date(
@@ -43,6 +47,10 @@ export default defineEventHandler(async (event) => {
       dateCaptured: commitListings[index].commit.author.date
     })
   );
+
+  // Since the above's entries are sorted by the latest dateCaptured first,
+  // the following will preserve the last item with a duplicate key value.
+  // Therefore, we'll be left with entries containing the earliest dateCaptured...
   const uniqueSnapshotEntries = filterByUniqueKeyValue(
     possiblyDuplicateSnapshotEntries,
     'snapshotId'
