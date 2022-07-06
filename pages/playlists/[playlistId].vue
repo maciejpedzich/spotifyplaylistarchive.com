@@ -20,16 +20,18 @@ const tabItems = [
   {
     label: 'Show statistics',
     icon: 'pi pi-chart-bar',
-    to: `./statistics`
+    to: `./stats`
   }
 ];
 
-const { error, data } = await useFetch<Playlist & { notFound?: true }>(
+const { error, data: playlist } = await useFetch<
+  Playlist & { notFound?: true }
+>(
   () =>
-    `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/master/playlists/pretty/${playlistId}.json`,
+    `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`,
   {
     parseResponse: (body) =>
-      body.includes('404') ? { notFound: true } : JSON.parse(body),
+      body === '404: Not Found' ? { notFound: true } : JSON.parse(body),
     key: `playlist-${playlistId}`
   }
 );
@@ -47,20 +49,20 @@ const isNotFoundError = computed(
       </span>
       <span v-else>Something went wrong while fetching playlist's data</span>
     </p>
-    <template v-else-if="data">
+    <template v-else-if="playlist">
       <h1 class="text-3xl mb-3">
-        <NuxtLink :to="data.url" target="_blank">
-          {{ data.unique_name }}
-          <span v-if="data.unique_name !== data.original_name">
-            ({{ data.original_name }})
+        <NuxtLink :to="playlist.url" target="_blank">
+          {{ playlist.unique_name }}
+          <span v-if="playlist.unique_name !== playlist.original_name">
+            ({{ playlist.original_name }})
           </span>
         </NuxtLink>
         by
-        <NuxtLink :to="data.owner.url" target="_blank">
-          {{ data.owner.name }}
+        <NuxtLink :to="playlist.owner?.url" target="_blank">
+          {{ playlist.owner?.name }}
         </NuxtLink>
       </h1>
-      <TabMenu class="w-full mb-5" :model="tabItems" />
+      <TabMenu class="w-full mb-4" :model="tabItems" />
       <NuxtPage />
     </template>
   </div>
