@@ -10,4 +10,9 @@ export interface Track {
   duration_ms: number;
   name: string;
   url: string;
+  date_added: string;
+  date_added_asterisk: boolean;
+  date_removed: string | null;
+  position?: string;
+  retention?: number;
 }
