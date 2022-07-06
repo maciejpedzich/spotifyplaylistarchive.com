@@ -4,7 +4,7 @@ import { useMediaQuery } from '@vueuse/core';
 import ProgressSpinner from 'primevue/progressspinner';
 import Calendar from 'primevue/calendar';
 
-import { CalendarEntry } from '~~/models/calendar-entry';
+import { Snapshot } from '~~/models/snapshot';
 
 // Moving these interfaces to separate files makes TypeScript scream at you
 interface PrimeVueDate {
@@ -51,7 +51,7 @@ const {
   error: calendarEntriesLoadError,
   data: calendarEntries,
   refresh: reloadCalendarEntries
-} = useFetch<CalendarEntry[]>(
+} = useFetch<Snapshot[]>(
   () => `/api/playlists/${playlistId}/snapshots?${queryString.value}`,
   {
     key: `snapshots-calendar-of-${playlistId}`,
