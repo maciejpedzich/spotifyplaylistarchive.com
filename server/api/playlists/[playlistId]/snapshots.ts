@@ -2,6 +2,7 @@ import { $fetch } from 'ohmyfetch';
 
 import { octokit } from '~~/server/utils/octokit';
 import { filterByUniqueKeyValue } from '~~/server/utils/filterByUniqueKeyValue';
+import { Playlist } from '~~/models/playlist';
 
 export default defineEventHandler(async (event) => {
   const query = useQuery(event);
@@ -34,23 +35,24 @@ export default defineEventHandler(async (event) => {
 
   const snapshotFileContents = await Promise.all(
     commitListings.map(({ sha }) =>
-      $fetch<{ snapshot_id: string }>(
+      $fetch<Playlist>(
         `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${sha}/playlists/pretty/${playlistId}.json`,
         { parseResponse: JSON.parse }
       )
     )
   );
   const possiblyDuplicateSnapshotEntries = snapshotFileContents.map(
-    ({ snapshot_id }, index) => ({
+    ({ snapshot_id, num_followers }, index) => ({
       snapshotId: snapshot_id,
       commitSha: commitListings[index].sha,
-      dateCaptured: commitListings[index].commit.author.date
+      dateCaptured: commitListings[index].commit.author.date,
+      numFollowers: num_followers
     })
   );
 
-  // Since the above's entries are sorted by the latest dateCaptured first,
+  // Since commit listings are sorted by the latest dateCaptured first,
   // the following will preserve the last item with a duplicate key value.
-  // Therefore, we'll be left with entries containing the earliest dateCaptured...
+  // Therefore, we'll be left with entries containing the earliest dateCaptured.
   const uniqueSnapshotEntries = filterByUniqueKeyValue(
     possiblyDuplicateSnapshotEntries,
     'snapshotId'
