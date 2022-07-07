@@ -10,17 +10,17 @@ const tabItems = [
   {
     label: 'Browse snapshots',
     icon: 'pi pi-calendar',
-    to: `./snapshots`
+    to: `/playlists/${playlistId}/snapshots`
   },
   {
     label: 'Compare snapshots',
     icon: 'pi pi-sort-alt',
-    to: `./snapshots/compare`
+    to: `/playlists/${playlistId}/snapshots/compare`
   },
   {
     label: 'Show statistics',
     icon: 'pi pi-chart-bar',
-    to: `./stats`
+    to: `/playlists/${playlistId}/stats`
   }
 ];
 
