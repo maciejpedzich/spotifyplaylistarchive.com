@@ -23,7 +23,8 @@ const formatDate = (date: string | null) =>
 const displayRetentionText = (retention: number) => {
   const durationObject = intervalToDuration({ start: 0, end: retention });
   const displayText = formatDuration(durationObject, {
-    format: ['years', 'months', 'days']
+    format: ['years', 'months', 'days'],
+    delimiter: ', '
   });
 
   return displayText;
@@ -33,27 +34,25 @@ const {
   pending,
   error,
   data: tracks
-} = await useAsyncData(`longest-standing-tracks-${playlistId}`, async () => {
-  const { tracks } = await $fetch<Cumulative>(
-    `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/cumulative/${playlistId}.json`,
-    { parseResponse: JSON.parse }
-  );
-  const now = new Date().toISOString();
+} = await useLazyAsyncData(
+  `longest-standing-tracks-${playlistId}`,
+  async () => {
+    const { tracks } = await $fetch<Cumulative>(
+      `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/cumulative/${playlistId}.json`,
+      { parseResponse: JSON.parse }
+    );
+    const now = new Date().toISOString();
 
-  return tracks
-    .map((track) => {
-      track.retention =
-        Date.parse(track.date_removed || now) - Date.parse(track.date_added);
+    return tracks
+      .map((track) => {
+        track.retention =
+          Date.parse(track.date_removed || now) - Date.parse(track.date_added);
 
-      return track;
-    })
-    .sort((a, b) => b.retention - a.retention)
-    .map((track, index) => {
-      track.position = `${index + 1}.`;
-
-      return track;
-    });
-});
+        return track;
+      })
+      .sort((a, b) => b.retention - a.retention);
+  }
+);
 </script>
 
 <template>
@@ -71,9 +70,8 @@ const {
         :rows-per-page-options="[10, 20, 50, 100]"
         paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         current-page-report-template="Showing {first} to {last} of {totalRecords}"
-        responsive-layout="scroll"
+        responsive-layout="stack"
       >
-        <Column field="position" header="No."></Column>
         <Column field="name" header="Title">
           <template #body="{ data: track }">
             <NuxtLink :to="track.url" target="_blank">
@@ -83,13 +81,15 @@ const {
         </Column>
         <Column field="artists" header="Artist(s)">
           <template #body="{ data: track }">
-            <div v-for="(artist, index) of track.artists" :key="artist.url">
-              <NuxtLink :to="artist.url" target="_blank">
-                {{ artist.name }}
-              </NuxtLink>
-              <span v-if="index !== track.artists.length - 1" class="md:mr-1"
-                >,</span
-              >
+            <div>
+              <div v-for="(artist, index) of track.artists" :key="artist.url">
+                <NuxtLink :to="artist.url" target="_blank">
+                  {{ artist.name }}
+                </NuxtLink>
+                <span v-if="index !== track.artists.length - 1" class="md:mr-1"
+                  >,</span
+                >
+              </div>
             </div>
           </template>
         </Column>
@@ -127,9 +127,13 @@ const {
 </template>
 
 <style scoped>
+:deep(div.p-datatable) {
+  width: 100%;
+  padding: 0 1rem;
+}
+
 @media only screen and (min-width: 768px) {
   :deep(div.p-datatable) {
-    width: 100%;
     padding: 0 8rem;
   }
 }

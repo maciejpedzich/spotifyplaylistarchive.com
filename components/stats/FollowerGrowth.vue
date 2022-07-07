@@ -39,7 +39,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric'
 });
 
-const { pending, error, data, refresh } = await useAsyncData(
+const { pending, error, data, refresh } = await useLazyAsyncData(
   `playlist-${playlistId}-follower-growth`,
   async () => {
     const snapshots = (
@@ -97,7 +97,7 @@ watch(chartPeriod, async () => await refresh());
 @media only screen and (min-width: 768px) {
   :deep(div.p-chart) {
     width: 100%;
-    padding: 0 10rem;
+    padding: 0 8rem;
   }
 }
 </style>
