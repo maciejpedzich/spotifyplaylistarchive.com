@@ -36,11 +36,11 @@ const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <p v-if="error">Something went wrong while fetching this snapshot</p>
     <template v-else-if="snapshot">
       <div class="text-lg text-center flex flex-column align-items-center">
-        <p class="mt-0 text-gray-300">
+        <p class="mt-0 px-3 text-gray-300">
           {{ decodeHtmlEntities(snapshot.description) }}
         </p>
         <ul id="snapshot-meta" class="m-0 p-0">
@@ -65,7 +65,7 @@ const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
           :rows-per-page-options="[10, 20, 50, 100]"
           paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           current-page-report-template="Showing {first} to {last} of {totalRecords}"
-          responsive-layout="scroll"
+          responsive-layout="stack"
         >
           <Column field="name" header="Title" sortable>
             <template #body="{ data: track }">
@@ -114,6 +114,12 @@ const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
   list-style: disc;
 }
 
+:deep(div.p-datatable) {
+  width: 100%;
+  margin: 2rem 0 3rem 0;
+  padding: 0 1rem;
+}
+
 @media screen and (min-width: 768px) {
   #snapshot-meta > li {
     float: left;
@@ -124,9 +130,9 @@ const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
     margin-left: 0;
     list-style: none;
   }
-}
 
-:deep(.p-datatable) {
-  margin: 2rem 0 3rem 0;
+  :deep(div.p-datatable) {
+    padding: 0 8rem;
+  }
 }
 </style>
