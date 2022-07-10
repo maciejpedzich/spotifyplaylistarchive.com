@@ -2,16 +2,17 @@
 import { decode as decodeHtmlEntities } from 'html-entities';
 import formatDuration from 'format-duration';
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-
 import { Playlist } from '~~/models/playlist';
 
 const route = useRoute();
 const playlistId = route.params.playlistId as string;
 const commitSha = route.params.commitSha as string;
 
-const { error, data: snapshot } = useFetch<Playlist>(
+const {
+  pending,
+  error,
+  data: snapshot
+} = useFetch<Playlist>(
   () =>
     `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`,
   { key: `snapshot-${commitSha}`, parseResponse: JSON.parse }
@@ -25,14 +26,8 @@ const totalTrackDuration = computed(() =>
 );
 
 const numberFormatter = new Intl.NumberFormat('en-US');
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-});
 
 const humanizeNumber = (num: number) => numberFormatter.format(num);
-const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
 </script>
 
 <template>
@@ -58,52 +53,11 @@ const formatDate = (date: string) => dateFormatter.format(Date.parse(date));
         </ul>
       </div>
       <ClientOnly>
-        <DataTable
-          :value="snapshot.tracks"
-          paginator
-          :rows="10"
-          :rows-per-page-options="[10, 20, 50, 100]"
-          paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          current-page-report-template="Showing {first} to {last} of {totalRecords}"
-          responsive-layout="stack"
-        >
-          <Column field="name" header="Title" sortable>
-            <template #body="{ data: track }">
-              <NuxtLink :to="track.url" target="_blank">
-                {{ track.name }}
-              </NuxtLink>
-            </template>
-          </Column>
-          <Column field="artists" header="Artist(s)">
-            <template #body="{ data: track }">
-              <div v-for="(artist, index) of track.artists" :key="artist.url">
-                <NuxtLink :to="artist.url" target="_blank">
-                  {{ artist.name }}
-                </NuxtLink>
-                <span v-if="index !== track.artists.length - 1" class="md:mr-1"
-                  >,</span
-                >
-              </div>
-            </template>
-          </Column>
-          <Column field="album.name" header="Album" sortable>
-            <template #body="{ data: track }">
-              <NuxtLink :to="track.album.url" target="_blank">
-                {{ track.album.name }}
-              </NuxtLink>
-            </template>
-          </Column>
-          <Column field="added_at" header="Date added" sortable>
-            <template #body="{ data: track }">
-              {{ formatDate(track.added_at) }}
-            </template>
-          </Column>
-          <Column field="duration_ms" header="Duration" sortable>
-            <template #body="{ data: track }">
-              {{ formatDuration(track.duration_ms) }}
-            </template>
-          </Column>
-        </DataTable>
+        <TrackEntriesTable
+          :loading="pending"
+          :tracks="snapshot.tracks"
+          page="snapshot"
+        />
       </ClientOnly>
     </template>
   </div>
