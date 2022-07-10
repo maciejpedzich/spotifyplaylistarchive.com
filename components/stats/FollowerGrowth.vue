@@ -27,6 +27,18 @@ const sinceDate = computed(() => {
 
 const chartOptions = {
   responsive: true,
+  scales: {
+    x: {
+      grid: {
+        color: 'rgba(255, 255, 255, 0.2)'
+      }
+    },
+    y: {
+      grid: {
+        color: 'rgba(255, 255, 255, 0.2)'
+      }
+    }
+  },
   plugins: {
     legend: {
       display: false
@@ -86,9 +98,13 @@ watch(chartPeriod, async () => await refresh());
       <p v-else-if="error">
         Something went wrong while fetching follwer growth data
       </p>
-      <template v-else-if="data">
-        <Chart class="mt-3" type="line" :options="chartOptions" :data="data" />
-      </template>
+      <Chart
+        v-else-if="data"
+        class="mt-3"
+        type="line"
+        :options="chartOptions"
+        :data="data"
+      />
     </ClientOnly>
   </NuxtLayout>
 </template>
