@@ -4,7 +4,7 @@ import Toast from 'primevue/toast';
 
 <template>
   <div class="w-full h-full flex flex-column">
-    <NavBar />
+    <UiNavBar />
     <main class="flex-1">
       <NuxtPage />
     </main>
