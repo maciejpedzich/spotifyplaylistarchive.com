@@ -103,7 +103,7 @@ const updateQueryAndReload = async ({ month, year }: DateChangePayload) => {
         Something went wrong while fetching archive entries
       </p>
       <Calendar
-        v-show="!loadingCalendarEntries"
+        v-if="!loadingCalendarEntries"
         v-model="calendarDisplayDate"
         :disabled="loadingCalendarEntries"
         :touch-u-i="isPortableScreen"
