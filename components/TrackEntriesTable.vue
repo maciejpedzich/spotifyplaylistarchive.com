@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import formatDuration from 'format-duration';
 import {
-  intervalToDuration,
+  intervalToDuration as intervalToDateFnsDuration,
   formatDuration as dateFnsFormatDuration
 } from 'date-fns';
 
@@ -26,7 +26,10 @@ const formatDate = (date: string | null) =>
   date ? dateFormatter.format(new Date(date)) : 'N/A';
 
 const displayRetentionText = (retention: number) => {
-  const durationObject = intervalToDuration({ start: 0, end: retention });
+  const durationObject = intervalToDateFnsDuration({
+    start: 0,
+    end: retention
+  });
   const displayText = dateFnsFormatDuration(durationObject, {
     format: ['years', 'months', 'days'],
     delimiter: ', '
@@ -38,7 +41,7 @@ const displayRetentionText = (retention: number) => {
 
 <template>
   <DataTable
-    class="w-full mx-5 mt-3 mb-5"
+    class="mx-5 mt-3 mb-5"
     :loading="props.loading"
     :value="props.tracks"
     :rows="10"
@@ -88,7 +91,7 @@ const displayRetentionText = (retention: number) => {
         </template>
       </Column>
     </template>
-    <template v-else>
+    <template v-else-if="props.page === 'stats'">
       <Column field="date_added" header="Date added">
         <template #body="{ data: track }">
           <span>
