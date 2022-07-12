@@ -31,7 +31,7 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
 </script>
 
 <template>
-  <div class="w-full">
+  <div>
     <p v-if="error">Something went wrong while fetching this snapshot</p>
     <template v-else-if="snapshot">
       <div class="text-lg text-center flex flex-column align-items-center">
@@ -68,12 +68,6 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
   list-style: disc;
 }
 
-:deep(div.p-datatable) {
-  width: 100%;
-  margin: 2rem 0 3rem 0;
-  padding: 0 1rem;
-}
-
 @media screen and (min-width: 768px) {
   #snapshot-meta > li {
     float: left;
@@ -83,10 +77,6 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
   #snapshot-meta > li:first-of-type {
     margin-left: 0;
     list-style: none;
-  }
-
-  :deep(div.p-datatable) {
-    padding: 0 8rem;
   }
 }
 </style>
