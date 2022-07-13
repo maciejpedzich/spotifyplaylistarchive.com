@@ -3,10 +3,11 @@ import Menubar from 'primevue/menubar';
 
 interface MenuItem {
   label: string;
-  icon: string;
+  icon?: string;
   to?: string;
   visible?: boolean;
   command?(): unknown;
+  items?: MenuItem[];
 }
 
 const items = computed<MenuItem[]>(() => [
@@ -19,6 +20,12 @@ const items = computed<MenuItem[]>(() => [
     label: 'About',
     icon: 'pi pi-info-circle',
     to: '/about'
+  },
+  {
+    label: 'Add a playlist',
+    icon: 'pi pi-plus',
+    url: 'https://github.com/mackorone/spotify-playlist-archive/blob/main/CONTRIBUTING.md',
+    target: '_blank'
   }
 ]);
 </script>
