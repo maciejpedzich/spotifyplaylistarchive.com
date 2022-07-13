@@ -5,7 +5,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Dropdown from 'primevue/dropdown';
 import Chart from 'primevue/chart';
 
-import { Snapshot } from '~~/models/snapshot';
+import { CalendarEntry } from '~~/models/calendar-entry';
 
 const route = useRoute();
 const playlistId = route.params.playlistId as string;
@@ -55,7 +55,7 @@ const { pending, error, data, refresh } = await useLazyAsyncData(
   `playlist-${playlistId}-follower-growth`,
   async () => {
     const snapshots = (
-      await $fetch<Snapshot[]>(
+      await $fetch<CalendarEntry[]>(
         `/api/playlists/${playlistId}/snapshots?sinceDate=${sinceDate.value}`
       )
     ).reverse();
