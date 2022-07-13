@@ -2,6 +2,7 @@
 import { $fetch } from 'ohmyfetch';
 
 import { Cumulative } from '~~/models/cumulative';
+import { Track } from '~~/models/track';
 
 const route = useRoute();
 const playlistId = route.params.playlistId as string;
@@ -17,17 +18,19 @@ const {
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/cumulative/${playlistId}.json`,
       { parseResponse: JSON.parse }
     );
-    const now = new Date().toISOString();
+    const now = Date.now();
 
     return tracks
       .map((track) => {
         track.retention =
-          Date.parse(track.date_removed || now) - Date.parse(track.date_added);
+          (Date.parse(track.date_removed) || now) -
+          Date.parse(track.date_added);
 
         return track;
       })
       .sort((a, b) => b.retention - a.retention);
-  }
+  },
+  { default: () => [] as Track[] }
 );
 </script>
 
@@ -37,13 +40,13 @@ const {
       <p v-if="error">
         Something went wrong while fetching the longest standing tracks
       </p>
-      <TrackEntriesTable :loading="pending" :tracks="tracks" page="stats" />
+      <SnapshotTrackEntries :loading="pending" :tracks="tracks" page="stats" />
     </ClientOnly>
   </NuxtLayout>
 </template>
 
 <style scoped>
-:deep(div.p-datatable) {
+/* :deep(div.p-datatable) {
   width: 100%;
   padding: 0 1rem;
 }
@@ -52,5 +55,5 @@ const {
   :deep(div.p-datatable) {
     padding: 0 8rem;
   }
-}
+} */
 </style>

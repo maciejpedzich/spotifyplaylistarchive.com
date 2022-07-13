@@ -15,7 +15,10 @@ const {
 } = useFetch<Playlist>(
   () =>
     `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`,
-  { key: `snapshot-${commitSha}`, parseResponse: JSON.parse }
+  {
+    key: `snapshot-${commitSha}`,
+    parseResponse: JSON.parse
+  }
 );
 
 const totalTrackDuration = computed(() =>
@@ -53,7 +56,7 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
         </ul>
       </div>
       <ClientOnly>
-        <TrackEntriesTable
+        <SnapshotTrackEntries
           :loading="pending"
           :tracks="snapshot.tracks"
           page="snapshot"

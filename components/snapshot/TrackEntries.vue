@@ -25,17 +25,17 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 const formatDate = (date: string | null) =>
   date ? dateFormatter.format(new Date(date)) : 'N/A';
 
-const displayRetentionText = (retention: number) => {
+const formatRetentionText = (retention: number) => {
   const durationObject = intervalToDateFnsDuration({
     start: 0,
     end: retention
   });
-  const displayText = dateFnsFormatDuration(durationObject, {
+  const formattedText = dateFnsFormatDuration(durationObject, {
     format: ['years', 'months', 'days'],
     delimiter: ', '
   });
 
-  return displayText;
+  return formattedText;
 };
 </script>
 
@@ -60,16 +60,14 @@ const displayRetentionText = (retention: number) => {
     </Column>
     <Column field="artists" header="Artist(s)">
       <template #body="{ data: track }">
-        <div>
-          <div v-for="(artist, index) of track.artists" :key="artist.url">
-            <NuxtLink :to="artist.url" target="_blank">
-              {{ artist.name }}
-            </NuxtLink>
-            <span v-if="index !== track.artists.length - 1" class="md:mr-1"
-              >,</span
-            >
-          </div>
-        </div>
+        <span v-for="(artist, index) of track.artists" :key="artist.url">
+          <NuxtLink :to="artist.url" target="_blank">
+            {{ artist.name }}
+          </NuxtLink>
+          <span v-if="index !== track.artists.length - 1" class="md:mr-1"
+            >,</span
+          >
+        </span>
       </template>
     </Column>
     <Column field="album.name" header="Album">
@@ -94,23 +92,17 @@ const displayRetentionText = (retention: number) => {
     <template v-else-if="props.page === 'stats'">
       <Column field="date_added" header="Date added">
         <template #body="{ data: track }">
-          <span>
-            {{ formatDate(track.date_added) }}
-          </span>
+          {{ formatDate(track.date_added) }}
         </template>
       </Column>
       <Column field="date_removed" header="Date removed">
         <template #body="{ data: track }">
-          <span>
-            {{ formatDate(track.date_removed) }}
-          </span>
+          {{ formatDate(track.date_removed) }}
         </template>
       </Column>
       <Column field="retention" header="Retention">
         <template #body="{ data: track }">
-          <span>
-            {{ displayRetentionText(track.retention) }}
-          </span>
+          {{ formatRetentionText(track.retention) }}
         </template>
       </Column>
     </template>
