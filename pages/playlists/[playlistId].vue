@@ -13,14 +13,15 @@ const tabItems = [
     to: `/playlists/${playlistId}/snapshots`
   },
   {
-    label: 'Compare snapshots',
-    icon: 'pi pi-sort-alt',
-    to: `/playlists/${playlistId}/snapshots/compare`
-  },
-  {
     label: 'Show statistics',
     icon: 'pi pi-chart-bar',
     to: `/playlists/${playlistId}/stats`
+  },
+  {
+    label: 'Compare snapshots (SOON)',
+    icon: 'pi pi-sort-alt',
+    to: `/playlists/${playlistId}/snapshots/compare`,
+    disabled: true
   }
 ];
 
@@ -73,14 +74,6 @@ const isNotFoundError = computed(
   margin-left: 5rem;
   margin-right: 5rem;
   justify-content: center;
-}
-
-:deep(li.p-tabmenuitem) {
-  margin-left: 1rem;
-}
-
-:deep(li.p-tabmenuitem:first-of-type) {
-  margin-left: 0;
 }
 
 :deep(.p-tabmenu .p-tabmenu-nav .p-tabmenuitem a.p-menuitem-link) {
