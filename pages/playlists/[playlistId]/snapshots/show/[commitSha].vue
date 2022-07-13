@@ -2,7 +2,7 @@
 import { decode as decodeHtmlEntities } from 'html-entities';
 import formatDuration from 'format-duration';
 
-import { Playlist } from '~~/models/playlist';
+import { Snapshot } from '~~/models/snapshot';
 
 const route = useRoute();
 const playlistId = route.params.playlistId as string;
@@ -12,7 +12,7 @@ const {
   pending,
   error,
   data: snapshot
-} = useFetch<Playlist>(
+} = useFetch<Snapshot>(
   () =>
     `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`,
   {

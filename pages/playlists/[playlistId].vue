@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TabMenu from 'primevue/tabmenu';
 
-import { Playlist } from '~~/models/playlist';
+import { Snapshot } from '~~/models/snapshot';
 
 const route = useRoute();
 const playlistId = route.params.playlistId;
@@ -25,14 +25,12 @@ const tabItems = [
   }
 ];
 
-const { error, data: playlist } = await useFetch<
-  Playlist & { notFound?: true }
->(
+const { error, data: playlist } = await useFetch<Snapshot>(
   () =>
     `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`,
   {
     parseResponse: (body) =>
-      body === '404: Not Found' ? { notFound: true } : JSON.parse(body),
+      body === '404: Not Found' ? null : JSON.parse(body),
     key: `playlist-${playlistId}`
   }
 );

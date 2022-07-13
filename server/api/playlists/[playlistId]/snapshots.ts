@@ -2,7 +2,7 @@ import { $fetch } from 'ohmyfetch';
 
 import { octokit } from '~~/server/utils/octokit';
 import { filterByUniqueKeyValue } from '~~/server/utils/filterByUniqueKeyValue';
-import { Playlist } from '~~/models/playlist';
+import { Snapshot } from '~~/models/snapshot';
 
 export default defineEventHandler(async (event) => {
   const query = useQuery(event);
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
   const snapshotFileContents = await Promise.all(
     commitListings.map(({ sha }) =>
-      $fetch<Playlist>(
+      $fetch<Snapshot>(
         `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${sha}/playlists/pretty/${playlistId}.json`,
         { parseResponse: JSON.parse }
       )

@@ -1,7 +1,7 @@
 import { User } from './user';
 import { Track } from './track';
 
-export interface Playlist {
+export interface Snapshot {
   description: string;
   num_followers: number;
   original_name: string;
