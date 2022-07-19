@@ -86,7 +86,7 @@ watch(chartPeriod, async () => await refresh());
 <template>
   <NuxtLayout name="centered-content">
     <ClientOnly>
-      <p class="mt-0 mb-3 text-lg">
+      <p class="my-0 text-lg">
         Period:
         <Dropdown
           v-model="chartPeriod"
@@ -100,7 +100,7 @@ watch(chartPeriod, async () => await refresh());
       </p>
       <Chart
         v-else-if="data"
-        class="mt-3"
+        class="w-7 h-4 mt-3"
         type="line"
         :options="chartOptions"
         :data="data"
@@ -108,12 +108,3 @@ watch(chartPeriod, async () => await refresh());
     </ClientOnly>
   </NuxtLayout>
 </template>
-
-<style scoped>
-@media only screen and (min-width: 768px) {
-  :deep(div.p-chart) {
-    width: 100%;
-    padding: 0 8rem;
-  }
-}
-</style>
