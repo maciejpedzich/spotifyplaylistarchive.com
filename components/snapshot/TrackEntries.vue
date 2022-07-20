@@ -37,19 +37,34 @@ const formatRetentionText = (retention: number) => {
 
   return formattedText;
 };
+
+const datatablePropsToEnable = computed(() =>
+  props.page === 'snapshot'
+    ? { scrollable: true, scrollHeight: '500px' }
+    : {
+        paginator: true,
+        paginatorTemplate:
+          'CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
+        currentPageReportTemplate:
+          'Showing {first} to {last} of {totalRecords}',
+        rows: 10,
+        rowsPerPageOptions: [10, 20, 50, 100]
+      }
+);
+
+const firstCellMarginTop = computed(() =>
+  props.page === 'stats' ? '3.5rem' : '0'
+);
 </script>
 
 <template>
   <DataTable
-    class="mx-5 mt-3 mb-5"
+    class="h-full mt-3 mb-5"
+    :class="[props.page === 'snapshot' ? 'w-12' : 'w-10']"
     :loading="props.loading"
     :value="props.tracks"
-    :rows="10"
-    :rows-per-page-options="[10, 20, 50, 100]"
-    paginator
-    paginator-template="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-    current-page-report-template="Showing {first} to {last} of {totalRecords}"
-    responsive-layout="stack"
+    show-gridlines
+    v-bind="datatablePropsToEnable"
   >
     <Column field="name" header="Title">
       <template #body="{ data: track }">
@@ -60,14 +75,16 @@ const formatRetentionText = (retention: number) => {
     </Column>
     <Column field="artists" header="Artist(s)">
       <template #body="{ data: track }">
-        <span v-for="(artist, index) of track.artists" :key="artist.url">
-          <NuxtLink :to="artist.url" target="_blank">
-            {{ artist.name }}
-          </NuxtLink>
-          <span v-if="index !== track.artists.length - 1" class="md:mr-1"
-            >,</span
-          >
-        </span>
+        <div>
+          <span v-for="(artist, index) of track.artists" :key="artist.url">
+            <NuxtLink :to="artist.url" target="_blank">
+              {{ artist.name }}
+            </NuxtLink>
+            <span v-if="index !== track.artists.length - 1" class="md:mr-1"
+              >,</span
+            >
+          </span>
+        </div>
       </template>
     </Column>
     <Column field="album.name" header="Album">
@@ -78,12 +95,12 @@ const formatRetentionText = (retention: number) => {
       </template>
     </Column>
     <template v-if="props.page === 'snapshot'">
-      <Column field="added_at" header="Date added" sortable>
+      <Column field="added_at" header="Date added">
         <template #body="{ data: track }">
           {{ formatDate(track.added_at) }}
         </template>
       </Column>
-      <Column field="duration_ms" header="Duration" sortable>
+      <Column field="duration_ms" header="Duration">
         <template #body="{ data: track }">
           {{ formatDuration(track.duration_ms) }}
         </template>
@@ -108,3 +125,15 @@ const formatRetentionText = (retention: number) => {
     </template>
   </DataTable>
 </template>
+
+<style scoped>
+:deep(tbody.p-datatable-tbody > tr:first-of-type > td) {
+  margin-top: 0;
+}
+
+@media only screen and (min-width: 768px) {
+  :deep(tbody.p-datatable-tbody > tr:first-of-type > td) {
+    margin-top: v-bind(firstCellMarginTop);
+  }
+}
+</style>
