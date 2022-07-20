@@ -34,14 +34,14 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
 </script>
 
 <template>
-  <div>
+  <div class="w-10">
     <p v-if="error">Something went wrong while fetching this snapshot</p>
     <template v-else-if="snapshot">
       <div class="text-lg text-center flex flex-column align-items-center">
         <p class="mt-0 px-3 text-gray-300">
           {{ decodeHtmlEntities(snapshot.description) }}
         </p>
-        <ul id="snapshot-meta" class="m-0 p-0">
+        <ul id="snapshot-meta" class="mt-0 mb-2 p-0">
           <li>
             {{ humanizeNumber(snapshot.num_followers) }}
             followers
