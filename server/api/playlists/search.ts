@@ -18,7 +18,9 @@ export default defineEventHandler(async (event) => {
 
       return { title, id };
     })
-    .filter((entry) => entry.title.includes(query.title as string));
+    .filter((entry) =>
+      entry.title.toLowerCase().includes((query.title as string).toLowerCase())
+    );
 
   return archiveEntries;
 });
