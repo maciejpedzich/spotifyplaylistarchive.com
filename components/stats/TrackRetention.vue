@@ -36,12 +36,10 @@ const {
 
 <template>
   <NuxtLayout name="centered-content">
-    <ClientOnly>
-      <p v-if="error">
-        Something went wrong while fetching the longest standing tracks
-      </p>
-      <SnapshotTrackEntries :loading="pending" :tracks="tracks" page="stats" />
-    </ClientOnly>
+    <p v-if="error">
+      Something went wrong while fetching the longest standing tracks
+    </p>
+    <SnapshotTrackEntries :loading="pending" :tracks="tracks" page="stats" />
   </NuxtLayout>
 </template>
 

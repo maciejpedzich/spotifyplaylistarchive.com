@@ -94,7 +94,7 @@ watch(chartPeriod, async () => await refresh());
           :disabled="pending"
         />
       </p>
-      <ProgressSpinner v-if="pending" />
+      <ProgressSpinner v-if="pending" class="mt-3" />
       <p v-else-if="error">
         Something went wrong while fetching follwer growth data
       </p>
