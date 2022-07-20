@@ -1,21 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { useMediaQuery } from '@vueuse/core';
-
 import ProgressSpinner from 'primevue/progressspinner';
-import Calendar from 'primevue/calendar';
+import Datepicker from '@vuepic/vue-datepicker';
 
 import { CalendarEntry } from '~~/models/calendar-entry';
 
-// Moving these interfaces to separate files makes TypeScript scream at you
-interface PrimeVueDate {
-  day: number;
-  month: number;
-  year: number;
-  today: boolean;
-  otherMonth: boolean;
-}
-
+// Moving this interfaces to separate files makes TypeScript scream at you
 interface DateChangePayload {
   month: number;
   year: number;
@@ -26,13 +16,13 @@ defineProps<{ page: 'snapshot-pick' | 'compare' }>();
 const route = useRoute();
 const playlistId = route.params.playlistId;
 
-const isPortableScreen = useMediaQuery('(max-width: 768px)');
+const now = new Date();
+const minDate = new Date('2021-12-01');
+const queryMonth = ref(now.getMonth());
+const queryYear = ref(now.getFullYear());
+const displayDate = reactive({ month: queryMonth, year: queryYear });
 
-const calendarDisplayDate = ref(new Date());
-const queryMonth = ref(calendarDisplayDate.value.getMonth());
-const queryYear = ref(calendarDisplayDate.value.getFullYear());
-
-const hoursOffset = -(calendarDisplayDate.value.getTimezoneOffset() / 60);
+const hoursOffset = -(now.getTimezoneOffset() / 60);
 const sinceDateParam = computed(() =>
   new Date(queryYear.value, queryMonth.value, 1, hoursOffset).toISOString()
 );
@@ -64,11 +54,18 @@ const {
 
 const snapshotLinkMap = computed<Record<string, string>>(() =>
   (calendarEntries.value || []).reduce((map, entry) => {
-    const dateCapturedKey = entry.dateCaptured.substring(0, 10);
-    map[dateCapturedKey] = `./snapshots/show/${entry.commitSha}`;
+    const dayCapturedKey = entry.dateCaptured.substring(8, 10);
+
+    map[dayCapturedKey] = `./snapshots/show/${entry.commitSha}`;
 
     return map;
   }, {})
+);
+const allowedDates = computed(() =>
+  Object.keys(JSON.parse(JSON.stringify(snapshotLinkMap.value))).map(
+    (dayKey) =>
+      new Date(queryYear.value, queryMonth.value, Number(dayKey), hoursOffset)
+  )
 );
 
 const updateQueryAndReload = async ({ month, year }: DateChangePayload) => {
@@ -78,18 +75,12 @@ const updateQueryAndReload = async ({ month, year }: DateChangePayload) => {
   await reloadCalendarEntries();
 };
 
-const primeVueDateToString = ({ year, month, day }: PrimeVueDate) =>
-  // PrimeVue Calendar dates' months are zero-based
-  // Just like in JavaScript date objects
-  [year, month + 1, day]
-    .map((num) => num.toString().padStart(2, '0'))
-    .join('-');
+const getSnapshotLinkFromDate = (day: number) =>
+  snapshotLinkMap.value[day.toString().padStart(2, '0')];
 
-const getSnapshotLinkFromDate = (calendarDate: PrimeVueDate) =>
-  snapshotLinkMap.value[primeVueDateToString(calendarDate)];
+const isDayCaptured = (day: number) => !!getSnapshotLinkFromDate(day);
 
-const isDateCaptured = (calendarDate: PrimeVueDate) =>
-  !!getSnapshotLinkFromDate(calendarDate);
+const isQueryMonth = (date: Date) => date.getMonth() === queryMonth.value;
 </script>
 
 <template>
@@ -105,40 +96,59 @@ const isDateCaptured = (calendarDate: PrimeVueDate) =>
       >
         Something went wrong while fetching archive entries
       </p>
-      <!-- Changing v-show to v-if breaks month/year change handling -->
-      <Calendar
+      <Datepicker
         v-show="!loadingCalendarEntries"
-        v-model="calendarDisplayDate"
-        :disabled="loadingCalendarEntries"
-        :touch-u-i="isPortableScreen"
+        v-model="displayDate"
+        :min-date="minDate"
+        :max-date="now"
+        :allowed-dates="allowedDates"
+        :enable-time-picker="false"
+        :month-change-on-arrows="false"
+        :month-change-on-scroll="false"
+        no-today
+        prevent-min-max-navigation
         inline
-        @month-change="updateQueryAndReload"
-        @year-change="updateQueryAndReload"
+        dark
+        @update-month-year="updateQueryAndReload"
       >
-        <template #date="{ date }">
+        <template #day="{ day, date }">
           <NuxtLink
-            v-if="isDateCaptured(date as PrimeVueDate)"
-            :to="getSnapshotLinkFromDate(date as PrimeVueDate)"
+            v-if="isQueryMonth(date) && isDayCaptured(day)"
+            class="w-full h-full"
+            :to="getSnapshotLinkFromDate(day)"
           >
-            <span class="bg-primary hover:bg-green-400 text-0 p-3 border-round">
-              {{ (date as PrimeVueDate).day }}
-            </span>
+            <div
+              class="w-full h-full flex justify-content-center align-items-center bg-primary hover:bg-green-400 text-0 border-round"
+            >
+              {{ day }}
+            </div>
           </NuxtLink>
-          <span v-else>
-            {{ (date as PrimeVueDate).day }}
-          </span>
+          <div v-else class="m-2">
+            {{ day }}
+          </div>
         </template>
-      </Calendar>
+      </Datepicker>
     </ClientOnly>
   </NuxtLayout>
 </template>
 
 <style scoped>
-:deep(.p-datepicker table td.p-datepicker-today > span.p-highlight) {
-  background-color: transparent;
+:deep(div.dp__calendar_header) {
+  width: 100%;
+  padding: 0.4rem 0.2rem;
 }
 
-:deep(.p-datepicker table.p-datepicker-calendar td > span.p-highlight) {
-  background-color: transparent;
+:deep(div.dp__cell_inner) {
+  margin: 0.5rem;
+  padding: 0;
+}
+
+:deep(div.dp__overlay_cell_active) {
+  background-color: var(--primary-color);
+  color: var(--surface-0);
+}
+
+:deep(div.dp__action_row:last-of-type) {
+  display: none;
 }
 </style>
