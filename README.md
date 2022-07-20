@@ -1,6 +1,6 @@
-# Nuxt 3 Minimal Starter
+# spotifyplaylistarchive.com
 
-Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
+This is the official website of [spotify-playlist-archive](https://github.com/mackorone/spotify-playlist-archive) project by [mackorone](https://github.com/mackorone).
 
 ## Setup
 
@@ -39,4 +39,18 @@ Locally preview production build:
 npm run preview
 ```
 
-Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
+Manually lint code and fix errors:
+
+```bash
+npm run lint -- --fix
+```
+
+Manually format code:
+
+```bash
+npm run prettier-format
+```
+
+## License
+
+MIT
