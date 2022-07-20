@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
+    "@vuepic/vue-datepicker": "^3.3.1",
     "@vueuse/core": "^8.7.5",
     "@vueuse/nuxt": "^8.7.5",
     "chart.js": "^3.8.0",
@@ -30,6 +31,7 @@
     "html-entities": "^2.3.3",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
-    "primevue": "^3.15.0"
+    "primevue": "^3.15.0",
+    "v-calendar": "^3.0.0-alpha.8"
   }
 }

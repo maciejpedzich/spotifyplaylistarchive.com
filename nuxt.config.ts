@@ -7,11 +7,12 @@ export default defineNuxtConfig({
     transpile: ['primevue']
   },
   css: [
+    '~~/assets/base.css',
     'primevue/resources/primevue.min.css',
     'primevue/resources/themes/arya-green/theme.css',
     'primeflex/primeflex.min.css',
     'primeicons/primeicons.css',
-    '~~/assets/base.css'
+    '@vuepic/vue-datepicker/dist/main.css'
   ],
   modules: ['@vueuse/nuxt'],
   vite: {
