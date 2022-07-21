@@ -104,7 +104,7 @@ const isQueryMonth = (date: Date) => date.getMonth() === queryMonth.value;
       <Datepicker
         v-show="!(loadingCalendarEntries || calendarEntriesLoadError)"
         v-model="displayDate"
-        class="md:p-0 p-2"
+        class="md:px-0 px-4"
         :min-date="minDate"
         :max-date="now"
         :allowed-dates="allowedDates"
