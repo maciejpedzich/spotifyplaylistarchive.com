@@ -40,7 +40,7 @@ const formatRetentionText = (retention: number) => {
 
 const datatablePropsToEnable = computed(() =>
   props.page === 'snapshot'
-    ? { scrollable: true, scrollHeight: '500px' }
+    ? {}
     : {
         paginator: true,
         paginatorTemplate:

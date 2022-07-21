@@ -16,13 +16,13 @@ const tabItems = [
     label: 'Show statistics',
     icon: 'pi pi-chart-bar',
     to: `/playlists/${playlistId}/stats`
-  },
-  {
-    label: 'Compare snapshots (SOON)',
-    icon: 'pi pi-sort-alt',
-    to: `/playlists/${playlistId}/snapshots/compare`,
-    disabled: true
   }
+  // {
+  //   label: 'Compare snapshots (SOON)',
+  //   icon: 'pi pi-sort-alt',
+  //   to: `/playlists/${playlistId}/snapshots/compare`,
+  //   disabled: true
+  // }
 ];
 
 const { error, data: playlist } = await useFetch<Snapshot>(
@@ -61,7 +61,7 @@ const isNotFoundError = computed(
           {{ playlist.owner?.name }}
         </NuxtLink>
       </h1>
-      <TabMenu class="w-full mb-4" :model="tabItems" />
+      <TabMenu class="md:w-10 w-full mb-4" :model="tabItems" />
       <NuxtPage />
     </template>
   </div>
@@ -69,8 +69,6 @@ const isNotFoundError = computed(
 
 <style scoped>
 :deep(ul.p-tabmenu-nav) {
-  margin-left: 5rem;
-  margin-right: 5rem;
   justify-content: center;
 }
 
