@@ -1,6 +1,10 @@
+# DISCLAIMER
+
+SPOTIFY is a registered trademark of Spotify AB. This project is not associated with Spotify AB in any way.
+
 # spotifyplaylistarchive.com
 
-This is the official website of [spotify-playlist-archive](https://github.com/mackorone/spotify-playlist-archive) project by [mackorone](https://github.com/mackorone).
+This is the frontend of [spotify-playlist-archive](https://github.com/mackorone/spotify-playlist-archive) repository by [mackorone](https://github.com/mackorone).
 
 ## Setup
 

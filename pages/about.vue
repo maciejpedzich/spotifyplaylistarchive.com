@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout name="centered-content">
     <h1 class="m-0 text-5xl">Spotify Playlist Archive</h1>
-    <div class="text-xl text-center">
+    <div class="w-6 text-xl text-center">
       <p>
         &copy; 2019-{{ new Date().getFullYear() }} Mack Ward, Maciej Pędzich.
         Released under MIT License.
@@ -16,7 +16,7 @@
         <NuxtLink to="https://www.netlify.com" target="_blank">Netlify</NuxtLink
         >.
       </p>
-      <p>
+      <p class="mb-2">
         Source code:
         <NuxtLink
           to="https://github.com/mackorone/spotify-playlist-archive"
@@ -28,6 +28,10 @@
           target="_blank"
           >this website</NuxtLink
         >.
+      </p>
+      <p class="mt-3 mb-0 line-height-4">
+        SPOTIFY is a registered trademark of Spotify AB. This project is not
+        associated with Spotify AB in any way.
       </p>
     </div>
   </NuxtLayout>
