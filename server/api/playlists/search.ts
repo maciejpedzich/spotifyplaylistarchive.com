@@ -2,6 +2,8 @@ import { $fetch } from 'ohmyfetch';
 
 export default defineEventHandler(async (event) => {
   const query = useQuery(event);
+  const searchTitle = query.title as string;
+  const searchPhrases = searchTitle.trim().split(/[ ]{1,}/);
 
   const readmeFileContent = await $fetch<string>(
     'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/README.md'
@@ -19,7 +21,9 @@ export default defineEventHandler(async (event) => {
       return { title, id };
     })
     .filter((entry) =>
-      entry.title.toLowerCase().includes((query.title as string).toLowerCase())
+      searchPhrases.every((phrase) =>
+        entry.title.toLowerCase().includes(phrase.toLowerCase())
+      )
     );
 
   return archiveEntries;
