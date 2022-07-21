@@ -11,7 +11,7 @@ const route = useRoute();
 const playlistId = route.params.playlistId as string;
 
 const chartPeriodOptions = ['Last week', 'Last month'];
-const chartPeriod = useState('chartPeriod', () => 'Last week');
+const chartPeriod = useState(`chartPeriod${playlistId}`, () => 'Last week');
 
 const sinceDate = computed(() => {
   const baseDate = new Date();
@@ -100,7 +100,7 @@ watch(chartPeriod, async () => await refresh());
       </p>
       <Chart
         v-else-if="data"
-        class="w-7 h-4 mt-3"
+        class="md:w-7 w-full h-4 mt-3"
         type="line"
         :options="chartOptions"
         :data="data"

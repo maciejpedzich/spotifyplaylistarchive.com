@@ -17,17 +17,22 @@ const route = useRoute();
 const playlistId = route.params.playlistId;
 
 const now = new Date();
-const minDate = new Date('2021-12-01');
-const queryMonth = ref(now.getMonth());
-const queryYear = ref(now.getFullYear());
-const displayDate = reactive({ month: queryMonth, year: queryYear });
+const queryMonth = useState(`queryMonth${playlistId}`, () => now.getMonth());
+const queryYear = useState(`queryYear${playlistId}`, () => now.getFullYear());
 
-const hoursOffset = -(now.getTimezoneOffset() / 60);
+const displayDate = new Date(queryYear.value, queryMonth.value);
+const minDate = new Date('2021-12-01');
+
+const hoursOffset = -(displayDate.getTimezoneOffset() / 60);
 const sinceDateParam = computed(() =>
-  new Date(queryYear.value, queryMonth.value, 1, hoursOffset).toISOString()
+  new Date(queryYear.value, queryMonth.value, 1, hoursOffset)
+    .toISOString()
+    .substring(0, 10)
 );
 const untilDateParam = computed(() =>
-  new Date(queryYear.value, queryMonth.value + 1, 1, hoursOffset).toISOString()
+  new Date(queryYear.value, queryMonth.value + 1, 1, hoursOffset)
+    .toISOString()
+    .substring(0, 10)
 );
 
 const queryString = computed(() => {
@@ -97,14 +102,16 @@ const isQueryMonth = (date: Date) => date.getMonth() === queryMonth.value;
         Something went wrong while fetching archive entries
       </p>
       <Datepicker
-        v-show="!loadingCalendarEntries"
+        v-show="!(loadingCalendarEntries || calendarEntriesLoadError)"
         v-model="displayDate"
+        class="md:p-0 p-2"
         :min-date="minDate"
         :max-date="now"
         :allowed-dates="allowedDates"
         :enable-time-picker="false"
         :month-change-on-arrows="false"
         :month-change-on-scroll="false"
+        no-swipe
         no-today
         prevent-min-max-navigation
         inline
@@ -141,6 +148,10 @@ const isQueryMonth = (date: Date) => date.getMonth() === queryMonth.value;
 :deep(div.dp__cell_inner) {
   margin: 0.5rem;
   padding: 0;
+}
+
+:deep(div.dp__active_date) {
+  background-color: transparent;
 }
 
 :deep(div.dp__overlay_cell_active) {
