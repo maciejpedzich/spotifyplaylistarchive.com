@@ -100,7 +100,7 @@ watch(chartPeriod, async () => await refresh());
       </p>
       <Chart
         v-else-if="data"
-        class="md:w-7 w-full h-4 mt-3"
+        class="md:w-7 md:mt-3 md:p-0 w-full mt-0 p-4 h-4"
         type="line"
         :options="chartOptions"
         :data="data"
