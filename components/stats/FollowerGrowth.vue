@@ -56,7 +56,7 @@ const { pending, error, data, refresh } = await useLazyAsyncData(
   async () => {
     const snapshots = (
       await $fetch<CalendarEntry[]>(
-        `/api/playlists/${playlistId}/snapshots?sinceDate=${sinceDate.value}`
+        `/api/playlists/${playlistId}/snapshots?sinceDate=${sinceDate.value}&allowDuplicates=yes`
       )
     ).reverse();
 

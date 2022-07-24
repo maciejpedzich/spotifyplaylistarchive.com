@@ -50,6 +50,8 @@ export default defineEventHandler(async (event) => {
     })
   );
 
+  if (query.allowDuplicates === 'yes') return possiblyDuplicateSnapshotEntries;
+
   // Since commit listings are sorted by the latest dateCaptured first,
   // the following will preserve the last item with a duplicate key value.
   // Therefore, we'll be left with entries containing the earliest dateCaptured.
