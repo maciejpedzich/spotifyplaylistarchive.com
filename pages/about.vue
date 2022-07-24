@@ -22,17 +22,15 @@
           to="https://github.com/mackorone/spotify-playlist-archive"
           target="_blank"
           >playlist archive</NuxtLink
-        >,
+        >
+        |
         <NuxtLink
           to="https://github.com/maciejpedzich/spotify-playlist-archive-website"
           target="_blank"
           >this website</NuxtLink
         >.
       </p>
-      <p class="mt-3 mb-0 line-height-4">
-        SPOTIFY is a registered trademark of Spotify AB. This project is not
-        associated with Spotify AB in any way.
-      </p>
+      <p>This project is not associated with Spotify AB in any way.</p>
     </div>
   </NuxtLayout>
 </template>
