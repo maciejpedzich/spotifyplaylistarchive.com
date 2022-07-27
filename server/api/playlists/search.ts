@@ -1,9 +1,11 @@
 import { $fetch } from 'ohmyfetch';
+import { Searcher } from 'fast-fuzzy';
 
 export default defineEventHandler(async (event) => {
   const query = useQuery(event);
-  const searchTitle = query.title as string;
-  const searchPhrases = searchTitle.trim().split(/[ ]{1,}/);
+  const searchName = query.name as string;
+
+  if (!searchName || searchName.length < 3) return [];
 
   const readmeFileContent = await $fetch<string>(
     'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/README.md'
@@ -16,15 +18,15 @@ export default defineEventHandler(async (event) => {
     .replaceAll('.md)', '')
     .split('\n')
     .map((textEntry) => {
-      const [title, id] = textEntry.split(' /playlists/pretty/');
+      const [name, id] = textEntry.split(' /playlists/pretty/');
 
-      return { title, id };
-    })
-    .filter((entry) =>
-      searchPhrases.every((phrase) =>
-        entry.title.toLowerCase().includes(phrase.toLowerCase())
-      )
-    );
+      return { name, id };
+    });
 
-  return archiveEntries;
+  const fuzzySearcher = new Searcher(archiveEntries, {
+    keySelector: (obj) => obj.name
+  });
+  const searchResults = fuzzySearcher.search(searchName).slice(0, 10);
+
+  return searchResults;
 });

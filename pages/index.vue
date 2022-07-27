@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useLocalStorage } from '@vueuse/core';
 import { $fetch } from 'ohmyfetch';
 import AutoComplete from 'primevue/autocomplete';
 
@@ -6,10 +7,8 @@ import { SearchResult } from '~~/models/search-result';
 
 const router = useRouter();
 
-const searchHistory = useCookie<SearchResult[]>('searchHistory');
-searchHistory.value = searchHistory.value || [];
-
-const searchText = ref('');
+const searchHistory = useLocalStorage('searchHistory', []);
+const searchName = ref('');
 const suggestions = ref([]);
 
 // For some odd reason, if you don't do JSON.parse(JSON.stringify),
@@ -18,10 +17,10 @@ const displaySearchHistory = () =>
   (suggestions.value = JSON.parse(JSON.stringify(searchHistory.value)));
 
 const findPlaylists = async () => {
-  if (searchText.value.length === 0) return displaySearchHistory();
+  if (searchName.value.length === 0) return displaySearchHistory();
 
   try {
-    const urlObject = new URL(searchText.value);
+    const urlObject = new URL(searchName.value);
     const [collectionName, playlistId] = urlObject.pathname
       .split('/')
       .filter(Boolean);
@@ -40,7 +39,7 @@ const findPlaylists = async () => {
               : [
                   {
                     id: playlistId,
-                    title: JSON.parse(body).original_name
+                    name: JSON.parse(body).original_name
                   }
                 ]
         }
@@ -54,7 +53,7 @@ const findPlaylists = async () => {
     if (error.message === 'This is not a valid playlist link') return [];
 
     const searchResults = await $fetch<SearchResult[]>(
-      `/api/playlists/search?title=${searchText.value}`
+      `/api/playlists/search?name=${searchName.value}`
     );
 
     return (suggestions.value = searchResults);
@@ -81,18 +80,18 @@ const openSnapshotsCalendar = async ({
 
 <template>
   <NuxtLayout name="centered-content">
-    <h1 class="m-0 md:text-5xl text-4xl">Spotify Playlist Archive</h1>
+    <h1 class="m-0 md:text-5xl text-3xl">Spotify Playlist Archive</h1>
     <div class="md:p-0 p-2 flex flex-column justify-content-center text-center">
       <p class="md:mt-3 mt-2 text-lg text-gray-300">
         Browse past versions of thousands of playlists saved over time
       </p>
       <div class="w-full md:px-0 px-3">
         <AutoComplete
-          v-model="searchText"
+          v-model="searchName"
           :suggestions="suggestions"
           class="w-full"
-          placeholder="Type in at least 3 characters, or paste a playlist link"
-          field="title"
+          placeholder="Start typing, or paste a playlist link"
+          field="name"
           :min-length="3"
           complete-on-focus
           @complete="findPlaylists"
