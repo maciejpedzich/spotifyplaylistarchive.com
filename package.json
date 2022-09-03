@@ -8,10 +8,10 @@
     "prettier-format": "prettier --config .prettierrc --ignore-path .gitignore --write \"./**/*.{vue,js,ts}\"",
     "preview": "nuxt preview"
   },
-  "dependencies": {},
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",
     "@octokit/rest": "^18.12.0",
+    "@types/chart.js": "^2.9.37",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",
     "@vue/eslint-config-prettier": "^7.0.0",
