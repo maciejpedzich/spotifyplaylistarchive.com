@@ -2,24 +2,42 @@
 import { decode as decodeHtmlEntities } from 'html-entities';
 import formatDuration from 'format-duration';
 
+import Button from 'primevue/button';
+import { useToast } from 'primevue/usetoast';
+
 import { Snapshot } from '~~/models/snapshot';
 
 const route = useRoute();
+const toast = useToast();
+
+const { copy } = useClipboard();
+const { canCopyToClipboard } = useCanCopyToClipboard();
+
 const playlistId = route.params.playlistId as string;
 const commitSha = route.params.commitSha as string;
+const snapshotDataUrl = `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`;
 
 const {
   pending,
   error,
   data: snapshot
-} = useFetch<Snapshot>(
-  () =>
-    `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`,
-  {
-    key: `snapshot-${commitSha}`,
-    parseResponse: JSON.parse
-  }
+} = useFetch<Snapshot>(snapshotDataUrl, {
+  key: `snapshot-${commitSha}`,
+  parseResponse: JSON.parse
+});
+
+const snapshotJsonFileName = computed(
+  () => `${snapshot.value?.unique_name}.json`
 );
+
+const snapshotJsonDownloadUrl = computed(() => {
+  if (!snapshot.value) return;
+
+  const blob = new Blob([JSON.stringify(snapshot.value, null, 2)]);
+  const url = URL.createObjectURL(blob);
+
+  return url;
+});
 
 const totalTrackDuration = computed(() =>
   (snapshot.value?.tracks || []).reduce(
@@ -29,8 +47,20 @@ const totalTrackDuration = computed(() =>
 );
 
 const numberFormatter = new Intl.NumberFormat('en-US');
-
 const humanizeNumber = (num: number) => numberFormatter.format(num);
+
+const copyTrackUrls = async () => {
+  const trackUrls = snapshot.value.tracks.map(({ url }) => url).join('\n');
+
+  await copy(trackUrls);
+
+  toast.add({
+    severity: 'success',
+    summary: 'Success',
+    detail: 'URLs have been copied to clipboard',
+    life: 5000
+  });
+};
 </script>
 
 <template>
@@ -54,6 +84,26 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
             </span>
           </li>
         </ul>
+        <div class="my-2 flex justify-content-center">
+          <Button
+            v-if="canCopyToClipboard"
+            class="p-button-text"
+            label="Copy track URLs"
+            icon="pi pi-clone"
+            @click="copyTrackUrls"
+          />
+          <a
+            id="export-to-json"
+            class="p-component p-button p-button-text"
+            :href="snapshotJsonDownloadUrl"
+            :download="snapshotJsonFileName"
+          >
+            <span
+              class="pi pi-download p-button-icon p-button-icon-left"
+            ></span>
+            <span class="p-button-label">Export to JSON</span>
+          </a>
+        </div>
       </div>
       <ClientOnly>
         <SnapshotTrackEntries
@@ -67,6 +117,12 @@ const humanizeNumber = (num: number) => numberFormatter.format(num);
 </template>
 
 <style scoped>
+#export-to-json:hover {
+  background-color: rgba(129, 199, 132, 0.04);
+  border-color: transparent;
+  color: #81c784;
+}
+
 #snapshot-meta > li:first-of-type {
   list-style: disc;
 }
