@@ -6,7 +6,8 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Browse past versions of thousands of playlists saved over time'
+      content:
+        'Browse past versions of thousands of Spotify playlists saved over time'
     }
   ]
 });
