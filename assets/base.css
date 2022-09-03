@@ -27,3 +27,15 @@ a:hover {
 button.p-button.p-component:disabled {
   cursor: not-allowed;
 }
+
+.p-autocomplete-input,
+.p-inputtext {
+  width: 100%;
+}
+
+.p-autocomplete-input,
+.p-inputtext,
+.p-autocomplete-input::placeholder,
+.p-inputtext::placeholder {
+  text-align: center;
+}
