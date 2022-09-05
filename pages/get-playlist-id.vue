@@ -2,17 +2,18 @@
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 const getPlaylistId = useGetPlaylistId();
 
 const { copy } = useClipboard();
-const { isSupported, clipboardWirtePermission, canCopyToClipboard } =
-  useCanCopyToClipboard();
+const { canCopyToClipboard } = useCanCopyToClipboard();
 
 const playlistUrl = ref('');
 const idToShow = ref('');
+const canShowFallbackDialog = ref(false);
 
 const actionButtonLabel = computed(() =>
   canCopyToClipboard.value ? 'Copy ID' : 'Show ID'
@@ -23,11 +24,13 @@ const copyOrShowPlaylistId = async () => {
 
   const playlistId = getPlaylistId(playlistUrl.value);
 
-  if (!canCopyToClipboard.value) return (idToShow.value = playlistId);
+  if (!canCopyToClipboard.value) {
+    idToShow.value = playlistId;
+    canShowFallbackDialog.value = true;
+    return;
+  }
 
   await copy(playlistId);
-  playlistUrl.value = '';
-
   toast.add({
     severity: 'success',
     summary: 'Success',
@@ -40,22 +43,13 @@ const copyOrShowPlaylistId = async () => {
 <template>
   <NuxtLayout name="centered-content">
     <div class="mx-4">
-      <h1 id="get-playlist-id-headline" class="m-0">
-        Get playlist's ID from URL
-      </h1>
       <ClientOnly>
         <template #fallback>
           <ProgressSpinner />
         </template>
-        <p v-if="!canCopyToClipboard">
-          You could have the button below copy the ID upon clicking, but
-          <span v-if="!isSupported">
-            your browser doesn't support functionality required to do so.
-          </span>
-          <span v-else-if="clipboardWirtePermission !== 'granted'">
-            you need to grant this website permission to copy text to clipboard.
-          </span>
-        </p>
+        <h1 id="get-playlist-id-headline" class="m-0">
+          Get playlist's ID from URL
+        </h1>
         <InputText
           v-model="playlistUrl"
           class="w-full my-3"
@@ -67,9 +61,18 @@ const copyOrShowPlaylistId = async () => {
           :label="actionButtonLabel"
           @click="copyOrShowPlaylistId"
         />
-        <p v-if="!canCopyToClipboard && idToShow">
+        <Dialog
+          header="Success"
+          :visible="canShowFallbackDialog"
+          :draggable="false"
+          :closable="false"
+          modal
+        >
           This playlist's ID is: <strong>{{ idToShow }}</strong>
-        </p>
+          <template #footer>
+            <Button label="OK" @click="canShowFallbackDialog = false" />
+          </template>
+        </Dialog>
       </ClientOnly>
     </div>
   </NuxtLayout>

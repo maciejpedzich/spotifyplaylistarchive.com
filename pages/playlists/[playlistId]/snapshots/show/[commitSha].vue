@@ -3,6 +3,7 @@ import { decode as decodeHtmlEntities } from 'html-entities';
 import formatDuration from 'format-duration';
 
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
 
 import { Snapshot } from '~~/models/snapshot';
@@ -11,8 +12,8 @@ const route = useRoute();
 const toast = useToast();
 
 const { copy } = useClipboard();
-const { isSupported, clipboardWirtePermission, canCopyToClipboard } =
-  useCanCopyToClipboard();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { isSupported, canCopyToClipboard } = useCanCopyToClipboard();
 
 const playlistId = route.params.playlistId as string;
 const commitSha = route.params.commitSha as string;
@@ -47,21 +48,23 @@ const totalTrackDuration = computed(() =>
   )
 );
 
-const copyTrackUrlsTooltip = computed(() =>
-  !isSupported.value
-    ? "Your browser doesn't support this feature"
-    : clipboardWirtePermission.value !== 'granted'
-    ? 'You need to grant this website permission to copy to clipboard'
-    : null
-);
-
 const numberFormatter = new Intl.NumberFormat('en-US');
 const humanizeNumber = (num: number) => numberFormatter.format(num);
 
-const copyTrackUrls = async () => {
-  const trackUrls = snapshot.value.tracks.map(({ url }) => url).join('\n');
+const trackUrlsToCopy = ref('');
+const canShowFallbackDialog = ref(false);
 
-  await copy(trackUrls);
+const copyTrackUrlsButtonLabel = computed(() =>
+  canCopyToClipboard.value ? 'Copy track URLs' : 'Show track URLs to copy'
+);
+const copyTrackUrls = async () => {
+  trackUrlsToCopy.value = snapshot.value.tracks
+    .map(({ url }) => url)
+    .join('\n');
+
+  if (!canCopyToClipboard.value) return (canShowFallbackDialog.value = true);
+
+  await copy(trackUrlsToCopy.value);
 
   toast.add({
     severity: 'success',
@@ -94,19 +97,10 @@ const copyTrackUrls = async () => {
           </li>
         </ul>
         <div class="my-2 flex justify-content-center">
-          <span
-            v-if="!canCopyToClipboard"
-            v-tooltip.top="copyTrackUrlsTooltip"
-            class="flex align-items-center text-blue-300"
-          >
-            <i class="pi pi-info-circle"></i>
-          </span>
           <Button
-            v-tooltip.hover="copyTrackUrlsTooltip"
             class="p-button-text"
-            label="Copy track URLs"
+            :label="copyTrackUrlsButtonLabel"
             icon="pi pi-clone"
-            :disabled="!canCopyToClipboard"
             @click="copyTrackUrls"
           />
           <a
@@ -123,6 +117,25 @@ const copyTrackUrls = async () => {
         </div>
       </div>
       <ClientOnly>
+        <Dialog
+          :visible="canShowFallbackDialog"
+          :draggable="false"
+          :closable="false"
+          :show-header="false"
+          modal
+        >
+          <p class="font-bold text-xl text-center">
+            Copy the track URLs below:
+          </p>
+          <pre class="w-4 h-10rem">{{ trackUrlsToCopy }}</pre>
+          <template #footer>
+            <Button
+              class="mt-3"
+              label="OK"
+              @click="canShowFallbackDialog = false"
+            />
+          </template>
+        </Dialog>
         <SnapshotTrackEntries
           :loading="pending"
           :tracks="snapshot.tracks"
