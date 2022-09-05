@@ -94,6 +94,13 @@ const copyTrackUrls = async () => {
           </li>
         </ul>
         <div class="my-2 flex justify-content-center">
+          <span
+            v-if="!canCopyToClipboard"
+            v-tooltip.top="copyTrackUrlsTooltip"
+            class="flex align-items-center text-blue-300"
+          >
+            <i class="pi pi-info-circle"></i>
+          </span>
           <Button
             v-tooltip.hover="copyTrackUrlsTooltip"
             class="p-button-text"
@@ -102,13 +109,6 @@ const copyTrackUrls = async () => {
             :disabled="!canCopyToClipboard"
             @click="copyTrackUrls"
           />
-          <span
-            v-if="!canCopyToClipboard"
-            v-tooltip.top="copyTrackUrlsTooltip"
-            class="flex align-items-center text-blue-300"
-          >
-            <i class="pi pi-info-circle"></i>
-          </span>
           <a
             id="export-to-json"
             class="p-component p-button p-button-text"
