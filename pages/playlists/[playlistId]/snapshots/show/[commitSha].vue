@@ -11,7 +11,8 @@ const route = useRoute();
 const toast = useToast();
 
 const { copy } = useClipboard();
-const { canCopyToClipboard } = useCanCopyToClipboard();
+const { isSupported, clipboardWirtePermission, canCopyToClipboard } =
+  useCanCopyToClipboard();
 
 const playlistId = route.params.playlistId as string;
 const commitSha = route.params.commitSha as string;
@@ -44,6 +45,14 @@ const totalTrackDuration = computed(() =>
     (total, track) => (total += track.duration_ms),
     0
   )
+);
+
+const copyTrackUrlsTooltip = computed(() =>
+  !isSupported.value
+    ? "Your browser doesn't support this feature"
+    : clipboardWirtePermission.value !== 'granted'
+    ? 'You need to grant this website permission to copy to clipboard'
+    : null
 );
 
 const numberFormatter = new Intl.NumberFormat('en-US');
@@ -86,12 +95,20 @@ const copyTrackUrls = async () => {
         </ul>
         <div class="my-2 flex justify-content-center">
           <Button
-            v-if="canCopyToClipboard"
+            v-tooltip.hover="copyTrackUrlsTooltip"
             class="p-button-text"
             label="Copy track URLs"
             icon="pi pi-clone"
+            :disabled="!canCopyToClipboard"
             @click="copyTrackUrls"
           />
+          <span
+            v-if="!canCopyToClipboard"
+            v-tooltip.top="copyTrackUrlsTooltip"
+            class="flex align-items-center text-blue-300"
+          >
+            <i class="pi pi-info-circle"></i>
+          </span>
           <a
             id="export-to-json"
             class="p-component p-button p-button-text"
