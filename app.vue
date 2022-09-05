@@ -15,7 +15,7 @@ useHead({
 
 <template>
   <div class="w-full h-full flex flex-column">
-    <UiNavBar />
+    <NavBar />
     <main class="flex-1">
       <NuxtPage />
     </main>
