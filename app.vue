@@ -6,7 +6,8 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Browse past versions of thousands of playlists saved over time'
+      content:
+        'Browse past versions of thousands of Spotify playlists saved over time'
     }
   ]
 });
@@ -14,7 +15,7 @@ useHead({
 
 <template>
   <div class="w-full h-full flex flex-column">
-    <UiNavBar />
+    <NavBar />
     <main class="flex-1">
       <NuxtPage />
     </main>

@@ -19,8 +19,13 @@ const items = computed<MenuItem[]>(() => [
   {
     label: 'Add a playlist',
     icon: 'pi pi-plus',
-    url: 'https://github.com/mackorone/spotify-playlist-archive/blob/main/CONTRIBUTING.md',
+    url: 'https://github.com/mackorone/spotify-playlist-archive/blob/main/CONTRIBUTING.md#adding-playlists',
     target: '_blank'
+  },
+  {
+    label: "Get playlist's ID from URL",
+    icon: 'pi pi-link',
+    to: '/get-playlist-id'
   },
   {
     label: 'About',

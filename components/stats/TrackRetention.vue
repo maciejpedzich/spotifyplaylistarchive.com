@@ -12,13 +12,14 @@ const {
   error,
   data: tracks
 } = await useLazyAsyncData(
-  `longest-standing-tracks-${playlistId}`,
+  `track-retention-${playlistId}`,
   async () => {
+    const now = Date.now();
+
     const { tracks } = await $fetch<Cumulative>(
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/cumulative/${playlistId}.json`,
       { parseResponse: JSON.parse }
     );
-    const now = Date.now();
 
     return tracks
       .map((track) => {
@@ -42,16 +43,3 @@ const {
     <SnapshotTrackEntries :loading="pending" :tracks="tracks" page="stats" />
   </NuxtLayout>
 </template>
-
-<style scoped>
-/* :deep(div.p-datatable) {
-  width: 100%;
-  padding: 0 1rem;
-}
-
-@media only screen and (min-width: 768px) {
-  :deep(div.p-datatable) {
-    padding: 0 8rem;
-  }
-} */
-</style>
