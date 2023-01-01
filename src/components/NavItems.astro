@@ -1,0 +1,32 @@
+---
+export interface Props {
+  class: string;
+}
+
+const { class: _class } = Astro.props as Props;
+---
+
+<ul class={_class}>
+  <li>
+    <a
+      href="https://github.com/mackorone/spotify-playlist-archive/blob/main/CONTRIBUTING.md#adding-playlists"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      <i class="fa-solid fa-calendar-plus"></i>
+      Add a playlist
+    </a>
+  </li>
+  <li>
+    <a href="/get-playlists-id">
+      <i class="fa-solid fa-link"></i>
+      Get playlist's ID from URL
+    </a>
+  </li>
+  <li>
+    <a href="/about">
+      <i class="fa-solid fa-info-circle"></i>
+      About
+    </a>
+  </li>
+</ul>

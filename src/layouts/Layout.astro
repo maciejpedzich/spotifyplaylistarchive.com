@@ -1,0 +1,75 @@
+---
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+import NavItems from '../components/NavItems.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1EB854" />
+    <link rel="canonical" href="https://spotifyplaylistarchive.com" />
+    <title>{title} - Spotify Playlist Archive</title>
+    <meta
+      name="description"
+      content="Browse past versions of thousands of Spotify playlists saved over time"
+    />
+    <meta name="theme-color" content="#1EB854" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://spotifyplaylistarchive.com" />
+    <meta property="og:title" content="Spotify Playlist Archive" />
+    <meta
+      property="og:description"
+      content="Browse past versions of thousands of Spotify playlists saved over time"
+    />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://spotifyplaylistarchive.com" />
+    <meta name="twitter:creator" content="@MaciejPedzich" />
+    <meta property="twitter:title" content="Spotify Playlist Archive" />
+    <meta
+      property="twitter:description"
+      content="Browse past versions of thousands of Spotify playlists saved over time"
+    />
+  </head>
+  <body class="w-screen h-screen">
+    <header
+      class="navbar bg-base-300 fixed top-0 w-full z-50 border-b-[1px] border-gray-600"
+    >
+      <div class="navbar-start">
+        <div class="lg:flex-none flex-1">
+          <a
+            href="/"
+            class="lg:mx-4 mx-0 btn btn-ghost normal-case text-lg whitespace-nowrap overflow-hidden"
+          >
+            Spotify Playlist Archive
+          </a>
+        </div>
+        <div class="lg:flex hidden">
+          <NavItems class="menu menu-horizontal p-0" />
+        </div>
+      </div>
+      <div class="navbar-end lg:hidden">
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="btn btn-square btn-ghost">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </label>
+          <NavItems
+            class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+          />
+        </div>
+      </div>
+    </header>
+    <main class="w-full h-full">
+      <slot />
+    </main>
+  </body>
+</html>
