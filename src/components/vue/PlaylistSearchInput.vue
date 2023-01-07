@@ -15,7 +15,7 @@ const searchHistory = ref<PlaylistEntry[]>(
   JSON.parse(localStorage.getItem('searchHistory') || '[]')
 );
 
-const playlists = ref<PlaylistEntry[]>([]);
+const playlistRegistry = ref<PlaylistEntry[]>([]);
 const searchSuggestions = ref<PlaylistEntry[]>(searchHistory.value);
 
 const isFetchingPlaylists = ref(true);
@@ -49,7 +49,7 @@ const fetchAvailablePlaylists = async () => {
         return { name, id };
       });
 
-    playlists.value = playlistEntries;
+    playlistRegistry.value = playlistEntries;
   } catch (error) {
     console.error(error);
     errorOccurred.value = true;
@@ -65,7 +65,6 @@ const findMatchingPlaylists = debounce(async (name: string) => {
     if (name.length === 0) return showSearchHistory();
     else if (name.length < 3) return (searchSuggestions.value = []);
 
-    // Assume the name is a valid playlist URL
     const playlistId = getPlaylistIdFromUrl(name);
     const githubResponse = await fetch(
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`
@@ -85,7 +84,7 @@ const findMatchingPlaylists = debounce(async (name: string) => {
       return (searchSuggestions.value = []);
     }
 
-    const matches = search(name, playlists.value, {
+    const matches = search(name, playlistRegistry.value, {
       keySelector: (obj) => obj.name
     });
 
@@ -116,7 +115,7 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
   ></i>
   <div v-else-if="errorOccurred" class="alert alert-error shadow-lg">
     <div>
-      <span>Failed to fetch available playlists</span>
+      <span>Failed to load playlist registry</span>
     </div>
     <div class="flex-none">
       <button class="btn btn-sm btn-ghost" @click="fetchAvailablePlaylists">
@@ -129,9 +128,9 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
       type="search"
       class="w-full input input-bordered rounded-none placeholder:text-center placeholder:text-base-content placeholder:opacity-80 active:outline-primary focus:outline-primary"
       placeholder="Start typing or paste a playlist URL"
-      v-model="searchTerm"
       @blur="canShowSuggestions = false"
       @focus="canShowSuggestions = true"
+      v-model="searchTerm"
     />
     <div
       v-show="canShowSuggestions"
@@ -144,7 +143,7 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
         @mousedown.prevent="saveMatchToHistory(match)"
       >
         <!-- Changing the above to click will cause blur to fire first, -->
-        <!-- thus removing the anchor before saveMatchToHistory is called -->
+        <!-- thus removing the anchor before navigation is triggered -->
         {{ match.name }}
       </a>
     </div>
