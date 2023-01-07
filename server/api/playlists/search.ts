@@ -10,7 +10,9 @@ export default defineEventHandler(async (event) => {
   const readmeFileContent = await $fetch<string>(
     'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/README.md'
   );
-  const [, playlistLinksMdList] = readmeFileContent.split('## Playlists\n\n');
+  const [, playlistLinksMdList] = readmeFileContent.split(
+    /## Playlists \\\([0-9]*\\\)\n\n/gm
+  );
   const archiveEntries = playlistLinksMdList
     .replaceAll('- [', '')
     .replaceAll('\\', '')
