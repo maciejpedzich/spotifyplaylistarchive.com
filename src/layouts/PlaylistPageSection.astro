@@ -1,0 +1,91 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+import { decode } from 'html-entities';
+
+import type { PlaylistSnapshot } from '../models/playlist-snapshot';
+
+const { playlistId } = Astro.params;
+
+let playlist: PlaylistSnapshot | null = null;
+let playlistFetchError = '';
+let displayTitle = '';
+let description = '';
+
+try {
+  const githubResponse = await fetch(
+    `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`
+  );
+
+  if (!githubResponse.ok) {
+    const errorMessage = githubResponse.status === 404
+      ? "This playlist doesn't exist"
+      : "Failed to fetch playlist's data";
+
+    throw new Error(errorMessage);
+  }
+
+  playlist = (await githubResponse.json()) as PlaylistSnapshot;
+  description = decode(playlist.description, { level: 'html5' });
+
+  displayTitle = playlist.unique_name !== playlist.original_name
+    ? `${playlist.unique_name} (${playlist.original_name})`
+    : playlist.original_name;
+} catch (error) {
+  console.error(error);
+
+  const expectedErrorMessages = [
+    "Failed to fetch playlist's data",
+    "This playlist doesn't exist"
+  ];
+
+  displayTitle = 'Error';
+  playlistFetchError = (error as Error).message;
+
+  description = expectedErrorMessages.includes(playlistFetchError)
+    ? playlistFetchError
+    : expectedErrorMessages[0];
+}
+---
+
+<BaseLayout title={displayTitle} description={description}>
+  <div class="mt-24 text-center flex flex-col gap-5 items-center">
+  {
+    playlist ? (
+      <h1 class="font-bold text-4xl">
+        <a href={playlist.url} target="_blank" rel="noopener noreferrer">
+          {displayTitle}
+        </a>
+        by
+        <a
+          href={playlist.owner.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {playlist.owner.name}
+        </a>
+      </h1>
+      <p class="text-lg">{description}</p>
+      <div class="tabs">
+        <a class="tab text-base">
+          <i class="fa-solid fa-calendar mr-3" />
+          Browse snapshots
+        </a>
+        <a class="tab text-base">
+          <i class="fa-solid fa-plus-minus mr-3" />
+          Compare snapshots
+        </a>
+        <a class="tab text-base">
+          <i class="fa-solid fa-chart-line mr-3" />
+          Show statistics
+        </a>
+      </div>
+      <slot />
+    ) : (
+      <div class="alert alert-error max-w-md justify-center shadow-lg">
+        {description}
+      </div>
+    )
+  }
+  </div>
+</BaseLayout>
