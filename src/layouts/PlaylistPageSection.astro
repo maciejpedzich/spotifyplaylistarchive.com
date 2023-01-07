@@ -22,6 +22,9 @@ try {
       ? "This playlist doesn't exist"
       : "Failed to fetch playlist's data";
 
+    Astro.response.status = githubResponse.status;
+    Astro.response.statusText = errorMessage;
+
     throw new Error(errorMessage);
   }
 
@@ -38,13 +41,14 @@ try {
     "Failed to fetch playlist's data",
     "This playlist doesn't exist"
   ];
+  const [miscError] = expectedErrorMessages
 
   displayTitle = 'Error';
   playlistFetchError = (error as Error).message;
 
   description = expectedErrorMessages.includes(playlistFetchError)
     ? playlistFetchError
-    : expectedErrorMessages[0];
+    : miscError;
 }
 ---
 
