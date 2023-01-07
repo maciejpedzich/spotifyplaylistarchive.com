@@ -3,20 +3,18 @@ import { onMounted, ref, watch } from 'vue';
 
 import { search } from 'fast-fuzzy';
 import { debounce } from 'debounce';
+
+import type { PlaylistSnapshot } from '../../models/playlist-snapshot';
+import type { SearchSuggestion } from '../../models/search-suggestion';
 import { getPlaylistIdFromUrl } from '../../utils/getPlaylistIdFromUrl';
 
-interface PlaylistEntry {
-  name: string;
-  id: string;
-}
-
 const searchTerm = ref('');
-const searchHistory = ref<PlaylistEntry[]>(
+const searchHistory = ref<SearchSuggestion[]>(
   JSON.parse(localStorage.getItem('searchHistory') || '[]')
 );
 
-const playlistRegistry = ref<PlaylistEntry[]>([]);
-const searchSuggestions = ref<PlaylistEntry[]>(searchHistory.value);
+const playlistRegistry = ref<SearchSuggestion[]>([]);
+const searchSuggestions = ref<SearchSuggestion[]>(searchHistory.value);
 
 const isFetchingPlaylists = ref(true);
 const errorOccurred = ref(false);
@@ -27,27 +25,15 @@ const fetchAvailablePlaylists = async () => {
     isFetchingPlaylists.value = true;
     errorOccurred.value = false;
 
-    const readmeFileContent = await (
+    const playlistMetadata: Record<string, PlaylistSnapshot> = await (
       await fetch(
-        'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/README.md'
+        'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/metadata.json'
       )
-    ).text();
+    ).json();
 
-    const [, playlistLinksMdList] = readmeFileContent.split(
-      /## Playlists \\\([0-9]*\\\)\n\n/gm
+    const playlistEntries = Object.entries(playlistMetadata).map(
+      ([id, { original_name }]) => ({ id, name: original_name })
     );
-
-    const playlistEntries: PlaylistEntry[] = playlistLinksMdList
-      .replaceAll('- [', '')
-      .replaceAll('\\', '')
-      .replaceAll('](', '')
-      .replaceAll('.md)', '')
-      .split('\n')
-      .map((textEntry) => {
-        const [name, id] = textEntry.split('/playlists/pretty/');
-
-        return { name, id };
-      });
 
     playlistRegistry.value = playlistEntries;
   } catch (error) {
@@ -72,11 +58,10 @@ const findMatchingPlaylists = debounce(async (name: string) => {
 
     if (!githubResponse.ok) throw new Error('Entry does not exist');
 
-    const playlist = await githubResponse.json();
+    const playlist: PlaylistSnapshot = await githubResponse.json();
+    const suggestion = { id: playlistId, name: playlist.original_name };
 
-    return (searchSuggestions.value = [
-      { id: playlistId, name: playlist.original_name }
-    ]);
+    return (searchSuggestions.value = [suggestion]);
   } catch (error) {
     const noopErrorMessages = ['Invalid playlist URL', 'Entry does not exist'];
 
@@ -84,21 +69,21 @@ const findMatchingPlaylists = debounce(async (name: string) => {
       return (searchSuggestions.value = []);
     }
 
-    const matches = search(name, playlistRegistry.value, {
+    const suggestions = search(name, playlistRegistry.value, {
       keySelector: (obj) => obj.name
     });
 
-    searchSuggestions.value = matches.slice(0, 5);
+    searchSuggestions.value = suggestions.slice(0, 5);
   }
 }, 250);
 
-const saveMatchToHistory = (match: PlaylistEntry) => {
+const saveMatchToHistory = (suggestion: SearchSuggestion) => {
   const isNewHistoryEntry = searchHistory.value.every(
-    (entry) => entry.id !== match.id
+    (entry) => entry.id !== suggestion.id
   );
 
   if (isNewHistoryEntry) {
-    searchHistory.value = [match, ...searchHistory.value].slice(0, 5);
+    searchHistory.value = [suggestion, ...searchHistory.value].slice(0, 5);
     localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
   }
 };
@@ -137,14 +122,14 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
       class="w-full absolute z-10 top-full left-0 right-0 bg-base-100 text-left border-l-[1px] border-r-[1px] border-solid border-base-content border-opacity-20"
     >
       <a
-        v-for="match in searchSuggestions"
+        v-for="suggestion in searchSuggestions"
         class="block p-3 text-inherit border-b-[1px] hover:bg-primary hover:text-primary-content focus:bg-primary focus:text-primary-content border-solid border-base-content border-opacity-20"
-        :href="`/playlists/${match.id}/snapshots`"
-        @mousedown.prevent="saveMatchToHistory(match)"
+        :href="`/playlists/${suggestion.id}/snapshots`"
+        @mousedown.prevent="saveMatchToHistory(suggestion)"
       >
         <!-- Changing the above to click will cause blur to fire first, -->
         <!-- thus removing the anchor before navigation is triggered -->
-        {{ match.name }}
+        {{ suggestion.name }}
       </a>
     </div>
   </div>
