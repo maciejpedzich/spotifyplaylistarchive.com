@@ -1,13 +1,17 @@
 ---
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../styles/global.css';
 
 import NavItems from '../components/NavItems.astro';
 
 interface Props {
   title: string;
+  description: string;
 }
 
-const { title } = Astro.props;
+const { title, description } = Astro.props as Props;
+
+const metaTagTitle = `${title} - Spotify Playlist Archive`;
 ---
 
 <!DOCTYPE html>
@@ -17,38 +21,29 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#1EB854" />
-    <link rel="canonical" href="https://spotifyplaylistarchive.com" />
-    <title>{title} - Spotify Playlist Archive</title>
-    <meta
-      name="description"
-      content="Browse past versions of thousands of Spotify playlists saved over time"
-    />
+    <link rel="canonical" href={Astro.url.href} />
+    <title>{metaTagTitle}</title>
+    <meta name="description" content={description} />
     <meta name="theme-color" content="#1EB854" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://spotifyplaylistarchive.com" />
-    <meta property="og:title" content="Spotify Playlist Archive" />
-    <meta
-      property="og:description"
-      content="Browse past versions of thousands of Spotify playlists saved over time"
-    />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:title" content={metaTagTitle} />
+    <meta property="og:description" content={description} />
     <meta property="twitter:card" content="summary" />
-    <meta property="twitter:url" content="https://spotifyplaylistarchive.com" />
+    <meta property="twitter:url" content={Astro.url.href} />
     <meta name="twitter:creator" content="@MaciejPedzich" />
-    <meta property="twitter:title" content="Spotify Playlist Archive" />
-    <meta
-      property="twitter:description"
-      content="Browse past versions of thousands of Spotify playlists saved over time"
-    />
+    <meta property="twitter:title" content={metaTagTitle} />
+    <meta property="twitter:description" content={description} />
   </head>
-  <body class="w-screen h-screen">
+  <body>
     <header
-      class="navbar bg-base-300 fixed top-0 w-full z-50 border-b-[1px] border-gray-600"
+      class="navbar bg-base-200 fixed top-0 w-full z-50 border-b-[1px] border-gray-600"
     >
       <div class="navbar-start">
         <div class="lg:flex-none flex-1">
           <a
             href="/"
-            class="lg:mx-4 mx-0 btn btn-ghost normal-case text-lg whitespace-nowrap overflow-hidden"
+            class="lg:mx-4 mx-0 btn btn-ghost normal-case text-lg whitespace-nowrap overflow-hidden hover:text-inherit"
           >
             Spotify Playlist Archive
           </a>
@@ -63,7 +58,7 @@ const { title } = Astro.props;
             <i class="fa-solid fa-bars text-xl"></i>
           </label>
           <NavItems
-            class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+            class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-300 z-10 rounded-box w-52"
           />
         </div>
       </div>
