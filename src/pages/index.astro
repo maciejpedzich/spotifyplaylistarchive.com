@@ -1,9 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+import PlaylistSearchInput from '../components/vue/PlaylistSearchInput.vue';
+
+const tagline =
+  'Browse past versions of thousands of Spotify playlists saved over time';
 ---
 
-<Layout title="Home">
-  <div class="w-full h-full flex justify-center items-center">
-    <h1 class="p-4 font-bold text-5xl text-center">Spotify Playlist Archive</h1>
+<Layout title="Home" description={tagline}>
+  <div
+    class="p-5 w-full h-full text-center flex flex-col md:gap-7 gap-5 justify-center items-center"
+  >
+    <h1 class="font-bold md:text-5xl text-4xl text-center">
+      Spotify Playlist Archive
+    </h1>
+    <div>
+      <p class="mb-7 md:text-xl text-lg">{tagline}</p>
+      <PlaylistSearchInput client:load />
+    </div>
   </div>
 </Layout>
