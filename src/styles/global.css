@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply w-screen h-screen overflow-x-hidden;
+}
+
+body {
+  @apply m-0 p-0;
+}
+
+a {
+  @apply text-primary hover:text-primary-focus focus:text-primary-focus;
+}
+
+li > a {
+  @apply hover:text-inherit focus:text-primary-content focus:bg-primary;
+}
