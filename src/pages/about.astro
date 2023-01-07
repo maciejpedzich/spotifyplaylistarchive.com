@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const currentYear = new Date().getFullYear();
+---
+
+<Layout
+  title="About"
+  description="Browse past versions of thousands of Spotify playlists saved over time"
+>
+  <div
+    class="w-full h-full p-5 md:text-xl text-base text-center flex flex-col md:gap-5 gap-3 justify-center items-center"
+  >
+    <h1 class="md:mb-3 mb-2 font-bold md:text-5xl text-3xl">
+      Spotify Playlist Archive
+    </h1>
+    <p>
+      &copy; 2019-{currentYear} Mack Ward, Maciej Pędzich. Released under MIT License.
+    </p>
+    <p>
+      Developed using
+      <a
+        href="https://github.com/maciejpedzich/spotify-playlist-archive-website/blob/master/package.json#L11"
+        target="_blank">these packages</a
+      >. Hosted on
+      <a href="https://www.netlify.com" target="_blank">Netlify</a>.
+    </p>
+    <p>
+      Source code:
+      <a
+        href="https://github.com/mackorone/spotify-playlist-archive"
+        target="_blank">playlist archive</a
+      >
+      |
+      <a
+        href="https://github.com/maciejpedzich/spotify-playlist-archive-website"
+        target="_blank">this website</a
+      >.
+    </p>
+    <strong class="m-0"
+      >This project is not associated with Spotify AB in any way!</strong
+    >
+  </div>
+</Layout>
