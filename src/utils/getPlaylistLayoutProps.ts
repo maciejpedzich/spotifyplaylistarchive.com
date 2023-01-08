@@ -3,8 +3,8 @@ import { decode } from 'html-entities';
 import type { AstroGlobal } from 'astro';
 import type { PlaylistSnapshot } from '../models/playlist-snapshot';
 
-export async function getPlaylistLayoutProps(this: Readonly<AstroGlobal>) {
-  const { playlistId } = this.params;
+export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
+  const { playlistId } = Astro.params;
 
   let playlist: PlaylistSnapshot | null = null;
   let title = '';
@@ -18,7 +18,7 @@ export async function getPlaylistLayoutProps(this: Readonly<AstroGlobal>) {
     if (!githubResponse.ok) {
       const errorMessage =
         githubResponse.status === 404
-          ? "This playlist doesn't exist"
+          ? "Astro playlist doesn't exist"
           : "Failed to fetch playlist's data";
 
       throw new Error(errorMessage);
@@ -34,7 +34,7 @@ export async function getPlaylistLayoutProps(this: Readonly<AstroGlobal>) {
   } catch (e) {
     const expectedErrorMessages = [
       "Failed to fetch playlist's data",
-      "This playlist doesn't exist"
+      "Astro playlist doesn't exist"
     ];
     const [miscError] = expectedErrorMessages;
     const errorMessage = (e as Error).message;
@@ -44,8 +44,8 @@ export async function getPlaylistLayoutProps(this: Readonly<AstroGlobal>) {
       ? errorMessage
       : miscError;
 
-    this.response.status = description === miscError ? 500 : 404;
-    this.response.statusText = errorMessage;
+    Astro.response.status = description === miscError ? 500 : 404;
+    Astro.response.statusText = errorMessage;
   }
 
   return { playlist, title, description };
