@@ -1,10 +1,10 @@
 ---
-import PlaylistPageSection from '../../../layouts/PlaylistPageSection.astro';
-import { getPlaylistLayoutProps } from '../../../utils/getPlaylistLayoutProps';
+import PlaylistPageTab from '@/layouts/PlaylistPageTab.astro';
+import { getPlaylistLayoutProps } from '@/utils/getPlaylistLayoutProps';
 
-const layoutProps = await getPlaylistLayoutProps.call(Astro);
+const layoutProps = await getPlaylistLayoutProps(Astro);
 ---
 
-<PlaylistPageSection {...layoutProps}>
+<PlaylistPageTab {...layoutProps}>
   <p class="text-lg">TODO: Implement snapshot calendar</p>
-</PlaylistPageSection>
+</PlaylistPageTab>
