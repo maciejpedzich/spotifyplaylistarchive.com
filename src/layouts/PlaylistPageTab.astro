@@ -13,7 +13,12 @@ const { playlist, title, description } = Astro.props as Props;
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class="mt-24 text-center flex flex-col gap-5 items-center">
+  <div
+    class:list={[
+      'text-center flex flex-col gap-5 items-center',
+      playlist ? 'mt-24' : 'w-screen h-screen justify-center'
+    ]}
+  >
   {
     playlist ? (
       <h1 class="font-bold text-4xl">
@@ -46,7 +51,7 @@ const { playlist, title, description } = Astro.props as Props;
       </div>
       <slot />
     ) : (
-    <div class="alert alert-error max-w-md justify-center shadow-lg">
+    <div class="alert alert-error max-w-xs justify-center shadow-lg">
       <span>{description}</span>
     </div>
     )
