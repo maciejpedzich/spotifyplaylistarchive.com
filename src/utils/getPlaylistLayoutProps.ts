@@ -15,14 +15,7 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`
     );
 
-    if (!githubResponse.ok) {
-      const errorMessage =
-        githubResponse.status === 404
-          ? "Astro playlist doesn't exist"
-          : "Failed to fetch playlist's data";
-
-      throw new Error(errorMessage);
-    }
+    if (!githubResponse.ok) throw new Error(githubResponse.status.toString());
 
     playlist = (await githubResponse.json()) as PlaylistSnapshot;
     description = decode(playlist.description, { level: 'html5' });
@@ -31,21 +24,16 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
       playlist.unique_name !== playlist.original_name
         ? `${playlist.unique_name} (${playlist.original_name})`
         : playlist.original_name;
-  } catch (e) {
-    const expectedErrorMessages = [
-      "Failed to fetch playlist's data",
-      "Astro playlist doesn't exist"
-    ];
-    const [miscError] = expectedErrorMessages;
-    const errorMessage = (e as Error).message;
+  } catch (error) {
+    const isNotFoundError = (error as Error).message === '404';
 
     title = 'Error';
-    description = expectedErrorMessages.includes(errorMessage)
-      ? errorMessage
-      : miscError;
+    description = isNotFoundError
+      ? "This playlist hasn't been archived yet."
+      : "Failed to load playlist's archive entry.";
 
-    Astro.response.status = description === miscError ? 500 : 404;
-    Astro.response.statusText = errorMessage;
+    Astro.response.status = isNotFoundError ? 404 : 500;
+    Astro.response.statusText = description;
   }
 
   return { playlist, title, description };
