@@ -16,73 +16,76 @@ const searchHistory = ref<SearchSuggestion[]>(
 const playlistRegistry = ref<SearchSuggestion[]>([]);
 const searchSuggestions = ref<SearchSuggestion[]>(searchHistory.value);
 
-const isFetchingPlaylists = ref(true);
-const registryFetchErrorOccurred = ref(false);
+const isLoadingRegistry = ref(true);
+const registryLoadErrorOccurred = ref(false);
 
-const isPreparingSuggestions = ref(false);
+const isLoadingSuggestions = ref(false);
 const canShowSuggestions = ref(false);
 
-const fetchAvailablePlaylists = async () => {
+const loadPlaylistRegistry = async () => {
   try {
-    isFetchingPlaylists.value = true;
-    registryFetchErrorOccurred.value = false;
+    isLoadingRegistry.value = true;
+    registryLoadErrorOccurred.value = false;
 
     const githubResponse = await fetch(
       'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/metadata.json'
     );
 
-    if (!githubResponse.ok) throw new Error(githubResponse.statusText);
+    if (!githubResponse.ok) throw new Error(`Archive ${githubResponse.status}`);
 
-    const playlistMetadata: Record<string, PlaylistSnapshot> =
+    const metadataJson: Record<string, PlaylistSnapshot> =
       await githubResponse.json();
 
-    const playlistEntries = Object.entries(playlistMetadata).map(
+    const playlistEntries = Object.entries(metadataJson).map(
       ([id, { original_name }]) => ({ id, name: original_name })
     );
 
     playlistRegistry.value = playlistEntries;
   } catch (error) {
     console.error(error);
-    registryFetchErrorOccurred.value = true;
+    registryLoadErrorOccurred.value = true;
   } finally {
-    isFetchingPlaylists.value = false;
+    isLoadingRegistry.value = false;
   }
 };
 
 const showSearchHistory = () => (searchSuggestions.value = searchHistory.value);
 
-const findMatchingPlaylists = debounce(async (name: string) => {
+const findMatchingPlaylists = debounce(async (term: string) => {
   try {
-    isPreparingSuggestions.value = true;
+    if (term.length === 0) return showSearchHistory();
+    else if (term.length < 3) return (searchSuggestions.value = []);
 
-    if (name.length === 0) return showSearchHistory();
-    else if (name.length < 3) return (searchSuggestions.value = []);
+    isLoadingSuggestions.value = true;
 
-    const playlistId = getPlaylistIdFromUrl(name);
+    // Assume the term is a vaild Spotify playlist URL
+    // If so, grab the playlist's ID from the URL and load its archive entry
+    const playlistId = getPlaylistIdFromUrl(term);
     const githubResponse = await fetch(
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`
     );
 
-    if (!githubResponse.ok)
-      throw new Error(`GitHub ${githubResponse.status.toString()}`);
+    if (!githubResponse.ok) throw new Error(`Archive ${githubResponse.status}`);
 
-    const playlist: PlaylistSnapshot = await githubResponse.json();
-    const suggestion = { id: playlistId, name: playlist.original_name };
+    const { original_name }: PlaylistSnapshot = await githubResponse.json();
+    const suggestion = { id: playlistId, name: original_name };
 
     searchSuggestions.value = [suggestion];
   } catch (error) {
     const errorMessage = (error as Error).message;
 
-    if (errorMessage === 'GitHub 404') return (searchSuggestions.value = []);
+    // Valid playlist URL was provided, but the archive entry wasn't found
+    if (errorMessage === 'Archive 404') return (searchSuggestions.value = []);
 
-    const suggestions = search(name, playlistRegistry.value, {
+    // The term is not a valid playlist URL
+    // Perform a fuzzy search against the playlist registry
+    const suggestions = search(term, playlistRegistry.value, {
       keySelector: (obj) => obj.name
     });
 
     searchSuggestions.value = suggestions.slice(0, 5);
   } finally {
-    isPreparingSuggestions.value = false;
-    canShowSuggestions.value = true;
+    isLoadingSuggestions.value = false;
   }
 }, 250);
 
@@ -97,25 +100,22 @@ const saveMatchToHistory = (suggestion: SearchSuggestion) => {
   }
 };
 
-onMounted(fetchAvailablePlaylists);
+onMounted(loadPlaylistRegistry);
 
 watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
 </script>
 
 <template>
-  <i
-    v-if="isFetchingPlaylists"
-    class="fa-solid fa-spinner fa-spin text-5xl"
-  ></i>
+  <i v-if="isLoadingRegistry" class="fa-solid fa-spinner fa-spin text-5xl"></i>
   <div
-    v-else-if="registryFetchErrorOccurred"
+    v-else-if="registryLoadErrorOccurred"
     class="alert alert-error shadow-lg"
   >
     <div>
       <span>Failed to load playlist registry</span>
     </div>
     <div class="flex-none">
-      <button class="btn btn-sm btn-ghost" @click="fetchAvailablePlaylists">
+      <button class="btn btn-sm btn-ghost" @click="loadPlaylistRegistry">
         Retry
       </button>
     </div>
@@ -134,7 +134,7 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
       class="w-full absolute z-10 top-full left-0 right-0 bg-base-100 text-left border-l-[1px] border-r-[1px] border-solid border-base-content border-opacity-20"
     >
       <div
-        v-if="isPreparingSuggestions"
+        v-if="isLoadingSuggestions"
         class="search-suggestion text-xl text-center"
       >
         <i class="fa-solid fa-spinner fa-spin"></i>
