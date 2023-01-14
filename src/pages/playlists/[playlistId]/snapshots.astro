@@ -8,7 +8,7 @@ const layoutProps = await getPlaylistLayoutProps(Astro);
 ---
 
 <PlaylistPageTab {...layoutProps}>
-  <p class="text-lg">
+  <p class="text-lg mb-3">
     Click on a highlighted date to show a snapshot captured that day.
   </p>
   <SnapshotCalendar client:load />
