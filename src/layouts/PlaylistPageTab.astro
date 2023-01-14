@@ -15,13 +15,13 @@ const { playlist, title, description } = Astro.props as Props;
 <BaseLayout title={title} description={description}>
   <div
     class:list={[
-      'text-center flex flex-col gap-5 items-center',
-      playlist ? 'mt-24' : 'w-screen h-screen justify-center'
+      'px-5 text-center flex flex-col gap-5 items-center',
+      playlist ? 'mt-[5.5rem]' : 'w-screen h-screen justify-center'
     ]}
   >
   {
     playlist ? (
-      <h1 class="font-bold text-4xl">
+      <h1 class="font-bold md:text-4xl text-3xl">
         <a href={playlist.url} target="_blank" rel="noopener noreferrer">
           {title}
         </a>
@@ -34,7 +34,7 @@ const { playlist, title, description } = Astro.props as Props;
           {playlist.owner.name}
         </a>
       </h1>
-      <div class="tabs mb-4">
+      <div class="tabs mb-2">
         <a class="tab text-base">
           <i class="fa-solid fa-calendar mr-3" />
           Browse snapshots
@@ -50,9 +50,9 @@ const { playlist, title, description } = Astro.props as Props;
       </div>
       <slot />
     ) : (
-    <div class="alert alert-error max-w-xs justify-center shadow-lg">
-      <span>{description}</span>
-    </div>
+      <div class="alert alert-error max-w-xs justify-center shadow-lg">
+        <span>{description}</span>
+      </div>
     )
   }
   </div>
