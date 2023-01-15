@@ -4,6 +4,7 @@ import SnapshotCalendar from '@/components/vue/SnapshotCalendar.vue';
 
 import { getPlaylistLayoutProps } from '@/utils/getPlaylistLayoutProps';
 
+const playlistId = Astro.params.playlistId as string;
 const layoutProps = await getPlaylistLayoutProps(Astro);
 ---
 
@@ -11,5 +12,5 @@ const layoutProps = await getPlaylistLayoutProps(Astro);
   <p class="text-lg mb-3">
     Click on a highlighted date to show a snapshot captured that day.
   </p>
-  <SnapshotCalendar client:load />
+  <SnapshotCalendar playlistId={playlistId} client:load />
 </PlaylistPageTab>

@@ -1,63 +1,111 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref } from 'vue';
 
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
+import type { SnapshotMeta } from '@/models/snapshot-meta';
 import type { UpdateMonthYearPayload } from '@/models/update-month-year-payload';
 
-const today = new Date();
+import { queryParamsToDate } from '@/utils/queryParamsToDate';
 
+const props = defineProps<{ playlistId: string }>();
+
+const queryParams = ref<URLSearchParams | null>(null);
 const minDate = ref(new Date('2021-01-01'));
+const maxDate = ref(new Date());
 const startDate = ref(new Date());
 
-const getStartDateArgs = () => {
-  const queryParams = new URLSearchParams(location.search);
+const loadingSnapshots = ref(true);
+const errorOccurred = ref(false);
+const snapshots = ref<SnapshotMeta[]>([]);
 
-  const year = queryParams.has('year')
-    ? Math.max(
-        Math.min(
-          Number(queryParams.get('year')) || today.getFullYear(),
-          today.getFullYear()
-        ),
-        2021
-      )
-    : today.getFullYear();
+const allowedDates = computed(() =>
+  snapshots.value.map(({ dateCaptured }) => new Date(dateCaptured))
+);
 
-  const normalisedMonthParam = Math.min(
-    // Query param months aren't zero-based, but JS Date months are
-    Math.max((Number(queryParams.get('month')) || 1) - 1, 0),
-    11
-  );
+const dateToCommitShaMap = computed<Record<string, string>>(() =>
+  snapshots.value.reduce((obj, { dateCaptured, commitSha }) => {
+    obj[dateCaptured.substring(8, 10)] = commitSha;
 
-  const month = queryParams.has('month')
-    ? year === today.getFullYear()
-      ? Math.min(normalisedMonthParam, today.getMonth())
-      : normalisedMonthParam
-    : today.getMonth();
+    return obj;
+  }, {} as Record<string, string>)
+);
 
-  return { month, year };
+const loadSnapshots = async () => {
+  try {
+    loadingSnapshots.value = true;
+    errorOccurred.value = false;
+
+    const queryString = queryParams.value?.toString();
+    const apiResponse = await fetch(
+      `/playlists/${props.playlistId}/snapshots.json?${queryString}`
+    );
+
+    if (!apiResponse.ok) {
+      throw new Error(`API ${apiResponse.status}`);
+    }
+
+    const data = await apiResponse.json();
+    snapshots.value = data;
+  } catch (error) {
+    console.error(error);
+    errorOccurred.value = true;
+  } finally {
+    loadingSnapshots.value = false;
+  }
 };
 
-const updateSearchParams = ({ month, year }: UpdateMonthYearPayload) => {
+const isDisplayedMonth = (date: Date) =>
+  date.getMonth() === startDate.value.getMonth();
+
+const getCommitSha = (day: number) =>
+  dateToCommitShaMap.value[day.toString().padStart(2, '0')];
+
+const getSnapshotHref = (day: number) =>
+  `/playlists/${props.playlistId}/snapshots/${getCommitSha(day)}`;
+
+const updateQueryAndReloadSnapshots = async ({
+  month,
+  year
+}: UpdateMonthYearPayload) => {
   const url = new URL(location.href);
 
-  url.searchParams.set('month', (month + 1).toString());
-  url.searchParams.set('year', year.toString());
+  queryParams.value?.set('month', (month + 1).toString());
+  queryParams.value?.set('year', year.toString());
+  startDate.value = queryParamsToDate(queryParams.value as URLSearchParams);
+
+  const queryString = queryParams.value?.toString();
+  url.search = `?${queryString}`;
+
   window.history.pushState({}, '', url);
+  await loadSnapshots();
 };
 
 onBeforeMount(() => {
-  const { month, year } = getStartDateArgs();
-  startDate.value = new Date(year, month, 1);
+  queryParams.value = new URLSearchParams(location.search);
+  startDate.value = queryParamsToDate(queryParams.value);
 });
+
+onMounted(loadSnapshots);
 </script>
 
 <template>
+  <i v-if="loadingSnapshots" class="fa-solid fa-spinner fa-spin text-5xl"></i>
+  <div v-else-if="errorOccurred" class="alert alert-error shadow-lg max-w-sm">
+    <div>
+      <span>Failed to load playlist registry</span>
+    </div>
+    <div class="flex-none">
+      <button class="btn btn-sm btn-ghost" @click="loadSnapshots">Retry</button>
+    </div>
+  </div>
   <Datepicker
+    v-show="!(loadingSnapshots || errorOccurred)"
     :min-date="minDate"
-    :max-date="today"
+    :max-date="maxDate"
     :start-date="startDate"
+    :allowed-dates="allowedDates"
     :enable-time-picker="false"
     :month-change-on-arrows="false"
     :month-change-on-scroll="false"
@@ -65,8 +113,20 @@ onBeforeMount(() => {
     no-today
     prevent-min-max-navigation
     inline
-    @update-month-year="updateSearchParams"
+    @update-month-year="updateQueryAndReloadSnapshots"
   >
+    <template #day="{ day, date }">
+      <a
+        v-if="isDisplayedMonth(date) && getCommitSha(day)"
+        class="w-full h-full flex justify-center items-center bg-primary text-primary-content"
+        :href="getSnapshotHref(day)"
+      >
+        {{ day }}
+      </a>
+      <template v-else>
+        {{ day }}
+      </template>
+    </template>
   </Datepicker>
 </template>
 
@@ -107,6 +167,10 @@ onBeforeMount(() => {
 
 :deep(div.dp__cell_inner) {
   @apply md:mx-2 md:my-1.5 mx-1.5 my-1 p-0 hover:bg-transparent hover:text-inherit;
+}
+
+:deep(div.dp__cell_inner > a) {
+  @apply hover:opacity-75 hover:text-primary-content focus:text-primary-content active:text-primary-content rounded-full;
 }
 
 :deep(div.dp__cell_disabled) {
