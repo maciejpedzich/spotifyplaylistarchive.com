@@ -16,7 +16,7 @@ const searchHistory = ref<SearchSuggestion[]>(
 const playlistRegistry = ref<SearchSuggestion[]>([]);
 const searchSuggestions = ref<SearchSuggestion[]>(searchHistory.value);
 
-const isLoadingRegistry = ref(true);
+const loadingRegistry = ref(true);
 const registryLoadErrorOccurred = ref(false);
 
 const isLoadingSuggestions = ref(false);
@@ -24,7 +24,7 @@ const canShowSuggestions = ref(false);
 
 const loadPlaylistRegistry = async () => {
   try {
-    isLoadingRegistry.value = true;
+    loadingRegistry.value = true;
     registryLoadErrorOccurred.value = false;
 
     const githubResponse = await fetch(
@@ -45,7 +45,7 @@ const loadPlaylistRegistry = async () => {
     console.error(error);
     registryLoadErrorOccurred.value = true;
   } finally {
-    isLoadingRegistry.value = false;
+    loadingRegistry.value = false;
   }
 };
 
@@ -106,7 +106,7 @@ watch(searchTerm, (newSearchTerm) => findMatchingPlaylists(newSearchTerm));
 </script>
 
 <template>
-  <i v-if="isLoadingRegistry" class="fa-solid fa-spinner fa-spin text-5xl"></i>
+  <i v-if="loadingRegistry" class="fa-solid fa-spinner fa-spin text-5xl"></i>
   <div
     v-else-if="registryLoadErrorOccurred"
     class="alert alert-error shadow-lg"
