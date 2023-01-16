@@ -12,9 +12,9 @@ import { queryParamsToDate } from '@/utils/queryParamsToDate';
 const props = defineProps<{ playlistId: string }>();
 
 const queryParams = ref<URLSearchParams | null>(null);
-const minDate = ref(new Date('2021-01-01'));
+const minDate = ref(new Date('2021-12-01'));
 const maxDate = ref(new Date());
-const startDate = ref(new Date());
+const displayDtae = ref(new Date());
 
 const loadingSnapshots = ref(true);
 const errorOccurred = ref(false);
@@ -46,8 +46,7 @@ const loadSnapshots = async () => {
       throw new Error(`API ${apiResponse.status}`);
     }
 
-    const data = await apiResponse.json();
-    snapshots.value = data;
+    snapshots.value = await apiResponse.json();
   } catch (error) {
     console.error(error);
     errorOccurred.value = true;
@@ -57,13 +56,15 @@ const loadSnapshots = async () => {
 };
 
 const isDisplayedMonth = (date: Date) =>
-  date.getMonth() === startDate.value.getMonth();
+  date.getMonth() === displayDtae.value.getMonth();
 
 const getCommitSha = (day: number) =>
   dateToCommitShaMap.value[day.toString().padStart(2, '0')];
 
-const getSnapshotHref = (day: number) =>
-  `/playlists/${props.playlistId}/snapshots/${getCommitSha(day)}`;
+const openSnapshotPage = (day: number) =>
+  (location.href = `/playlists/${props.playlistId}/snapshots/${getCommitSha(
+    day
+  )}`);
 
 const updateQueryAndReloadSnapshots = async ({
   month,
@@ -73,7 +74,7 @@ const updateQueryAndReloadSnapshots = async ({
 
   queryParams.value?.set('month', (month + 1).toString());
   queryParams.value?.set('year', year.toString());
-  startDate.value = queryParamsToDate(queryParams.value as URLSearchParams);
+  displayDtae.value = queryParamsToDate(queryParams.value as URLSearchParams);
 
   const queryString = queryParams.value?.toString();
   url.search = `?${queryString}`;
@@ -84,7 +85,7 @@ const updateQueryAndReloadSnapshots = async ({
 
 onBeforeMount(() => {
   queryParams.value = new URLSearchParams(location.search);
-  startDate.value = queryParamsToDate(queryParams.value);
+  displayDtae.value = queryParamsToDate(queryParams.value);
 });
 
 onMounted(loadSnapshots);
@@ -104,7 +105,7 @@ onMounted(loadSnapshots);
     v-show="!(loadingSnapshots || errorOccurred)"
     :min-date="minDate"
     :max-date="maxDate"
-    :start-date="startDate"
+    :start-date="displayDtae"
     :allowed-dates="allowedDates"
     :enable-time-picker="false"
     :month-change-on-arrows="false"
@@ -119,7 +120,7 @@ onMounted(loadSnapshots);
       <a
         v-if="isDisplayedMonth(date) && getCommitSha(day)"
         class="w-full h-full flex justify-center items-center bg-primary text-primary-content"
-        :href="getSnapshotHref(day)"
+        @click="openSnapshotPage(day)"
       >
         {{ day }}
       </a>

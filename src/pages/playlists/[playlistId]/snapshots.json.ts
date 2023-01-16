@@ -49,9 +49,9 @@ export const get: APIRoute = async ({ request, params }) => {
     const body = JSON.stringify(
       queryParams.get('allowDuplicates') === 'yes'
         ? possiblyDuplicateSnapshots
-        : // Since commits are sorted by the latest date_captured first,
-          // the following code will preserve the last item with a duplicate snapshot_id value.
-          // Therefore, we'll be left with entries containing the earliest date_captured.
+        : // Since commits are sorted by the latest dateCaptured first,
+          // the following code will preserve the last item with a duplicate snapshotId value.
+          // Therefore, we'll be left with entries containing the earliest dateCaptured.
           [
             ...new Map(
               possiblyDuplicateSnapshots.map((snapshot) => [
