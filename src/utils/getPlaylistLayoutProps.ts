@@ -9,13 +9,16 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
   let playlist: PlaylistSnapshot | null = null;
   let title = '';
   let description = '';
+  let errorOccurred = false;
 
   try {
     const githubResponse = await fetch(
       `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/pretty/${playlistId}.json`
     );
 
-    if (!githubResponse.ok) throw new Error(githubResponse.status.toString());
+    if (!githubResponse.ok) {
+      throw new Error(githubResponse.status.toString());
+    }
 
     playlist = (await githubResponse.json()) as PlaylistSnapshot;
     description = decode(playlist.description, { level: 'html5' });
@@ -27,6 +30,7 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
   } catch (error) {
     const isNotFoundError = (error as Error).message === '404';
 
+    errorOccurred = true;
     title = 'Error';
     description = isNotFoundError
       ? "This playlist hasn't been archived yet."
@@ -36,5 +40,5 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
     Astro.response.statusText = description;
   }
 
-  return { playlist, title, description };
+  return { playlist, title, description, errorOccurred };
 }

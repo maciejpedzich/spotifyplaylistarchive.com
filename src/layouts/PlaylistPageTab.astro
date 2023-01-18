@@ -7,9 +7,11 @@ interface Props {
   playlist: PlaylistSnapshot | null;
   title: string;
   description: string;
+  errorOccurred: boolean;
 }
 
-const { playlist, title, description } = Astro.props as Props;
+const { playlistId } = Astro.params;
+const { playlist, title, description, errorOccurred } = Astro.props as Props;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -20,7 +22,7 @@ const { playlist, title, description } = Astro.props as Props;
     ]}
   >
   {
-    playlist ? (
+    !errorOccurred && playlist ? (
       <h1 class="font-bold md:text-4xl text-3xl">
         <a href={playlist.url} target="_blank" rel="noopener noreferrer">
           {title}
@@ -35,7 +37,7 @@ const { playlist, title, description } = Astro.props as Props;
         </a>
       </h1>
       <div class="tabs mb-2">
-        <a class="tab text-base">
+        <a class="tab text-base" href={`/playlists/${playlistId}/snapshots`}>
           <i class="fa-solid fa-calendar mr-3" />
           Browse snapshots
         </a>
