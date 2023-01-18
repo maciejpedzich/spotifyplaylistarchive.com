@@ -18,6 +18,25 @@ li > a {
   @apply hover:text-inherit focus:text-primary-content focus:bg-primary;
 }
 
+#snapshot-tracklist th,
+#snapshot-tracklist tr,
+#snapshot-tracklist td {
+  @apply border-base-content border-opacity-20;
+}
+
+#snapshot-tracklist th {
+  @apply rounded-none;
+}
+
+#snapshot-tracklist tr {
+  @apply border-b-[1px];
+}
+
+#snapshot-tracklist th,
+#snapshot-tracklist td {
+  @apply border-r-[1px];
+}
+
 .search-suggestion {
   @apply block p-3 text-inherit border-b-[1px] border-solid border-base-content border-opacity-20;
 }
