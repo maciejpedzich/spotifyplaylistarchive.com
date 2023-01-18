@@ -7,8 +7,9 @@ module.exports = {
       {
         light: {
           ...require('daisyui/src/colors/themes')['[data-theme=garden]'],
-          primary: '#039826',
-          'primary-focus': '#02771D',
+          'base-100': '#FFFFFF',
+          primary: '#038822',
+          'primary-focus': '#015C16',
           'primary-content': '#FFFFFF'
         },
         dark: {
