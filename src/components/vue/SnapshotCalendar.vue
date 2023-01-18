@@ -62,9 +62,7 @@ const getCommitSha = (day: number) =>
   dateToCommitShaMap.value[day.toString().padStart(2, '0')];
 
 const openSnapshotPage = (day: number) =>
-  (location.href = `/playlists/${props.playlistId}/snapshots/${getCommitSha(
-    day
-  )}`);
+  (location.href = `./snapshots/${getCommitSha(day)}`);
 
 const updateQueryAndReloadSnapshots = async ({
   month,
