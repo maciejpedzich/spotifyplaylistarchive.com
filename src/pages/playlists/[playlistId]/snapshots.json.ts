@@ -6,7 +6,7 @@ import { queryParamsToDate } from '@/utils/queryParamsToDate';
 
 export const get: APIRoute = async ({ request, params }) => {
   try {
-    const playlistId = params.playlistId;
+    const { playlistId } = params;
     const queryParams = new URLSearchParams(new URL(request.url).search);
 
     const sinceDate = queryParamsToDate(queryParams);
@@ -16,7 +16,10 @@ export const get: APIRoute = async ({ request, params }) => {
     );
 
     const octokit = new Octokit();
-    const { data: commits } = await octokit.rest.repos.listCommits({
+    const {
+      data: commits,
+      headers: { etag }
+    } = await octokit.rest.repos.listCommits({
       owner: 'mackorone',
       repo: 'spotify-playlist-archive',
       path: `playlists/pretty/${playlistId}.json`,
@@ -62,12 +65,19 @@ export const get: APIRoute = async ({ request, params }) => {
           ]
     );
 
-    return {
+    const cacheControlDirectives =
+      Date.now() > untilDate.getTime()
+        ? 'max-age=31536000, immutable'
+        : 'max-age=86400';
+
+    return new Response(body, {
+      status: 200,
       headers: {
-        'Cache-Control': 'max-age=86400'
-      },
-      body
-    };
+        'Content-Type': 'application/json;charset=utf-8',
+        'Cache-Control': `public, ${cacheControlDirectives}`,
+        ETag: etag as string
+      }
+    });
   } catch (error) {
     console.error(error);
     return new Response(null, {
