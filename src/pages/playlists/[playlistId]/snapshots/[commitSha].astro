@@ -1,0 +1,97 @@
+---
+import { decode } from 'html-entities';
+import formatDuration from 'format-duration';
+
+import PlaylistPageTab from '@/layouts/PlaylistPageTab.astro';
+import { getPlaylistLayoutProps } from '@/utils/getPlaylistLayoutProps';
+import { getFormattedDate } from '@/utils/getFormattedDate';
+
+import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
+
+const layoutProps = await getPlaylistLayoutProps(Astro);
+
+let snapshot: PlaylistSnapshot | null = null;
+
+if (layoutProps.playlist) {
+  try {
+    const { playlistId, commitSha } = Astro.params;
+    const githubResponse = await fetch(
+      `https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/${commitSha}/playlists/pretty/${playlistId}.json`
+    );
+
+    if (!githubResponse.ok) {
+      throw new Error(githubResponse.status.toString());
+    }
+
+    snapshot = (await githubResponse.json()) as PlaylistSnapshot;
+    layoutProps.description = decode(snapshot.description, { level: 'html5' });
+  } catch (error) {
+    const isNotFoundError = (error as Error).message === '404';
+
+    layoutProps.errorOccurred = true;
+    layoutProps.title = 'Error';
+    layoutProps.description = isNotFoundError
+      ? "This snapshot doesn't exist."
+      : 'Failed to load snapshot.';
+
+    Astro.response.status = isNotFoundError ? 404 : 500;
+    Astro.response.statusText = layoutProps.description;
+  }
+}
+---
+
+<PlaylistPageTab {...layoutProps}>
+  <p class="text-lg">{layoutProps.description}</p>
+  <div class="overflow-x-auto">
+    <table
+      id="snapshot-tracklist"
+      class="table w-full my-4 mb-8 border-[1px] border-b-0 border-r-0 border-base-content border-opacity-20"
+    >
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist(s)</th>
+          <th>Album</th>
+          <th>Date added</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          snapshot?.tracks.map((track) => (
+            <tr>
+              <td>
+                <a href={track.url} target="_blank" rel="noopener noreferrer">
+                  {track.name}
+                </a>
+              </td>
+              <td>
+                {track.artists.map((artist) => (
+                  <a
+                    class="block mb-2 last-of-type:mb-0"
+                    href={artist.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {artist.name}
+                  </a>
+                ))}
+              </td>
+              <td>
+                <a
+                  href={track.album.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {track.album.name}
+                </a>
+              </td>
+              <td>{getFormattedDate(track.added_at)}</td>
+              <td>{formatDuration(track.duration_ms)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</PlaylistPageTab>
