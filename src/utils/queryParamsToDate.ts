@@ -1,27 +1,34 @@
 export const queryParamsToDate = (queryParams: URLSearchParams) => {
-  const today = new Date();
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
 
-  const year = queryParams.has('year')
+  const queryYear = queryParams.has('year')
     ? Math.max(
         Math.min(
-          Number(queryParams.get('year')) || today.getFullYear(),
-          today.getFullYear()
+          // If year param is NaN, use currentYear instead
+          Number(queryParams.get('year')) || currentYear,
+          currentYear
         ),
         2021
       )
-    : today.getFullYear();
+    : currentYear;
 
-  const normalisedMonthParam = Math.min(
-    // Query param months aren't zero-based, but JS Date months are
-    Math.max((Number(queryParams.get('month')) || 1) - 1, 0),
-    11
+  const parsedMonthParam = Math.min(
+    Math.max(
+      // JS Date months are zero-based, but query params aren't.
+      // This is for the end-user's convenience
+      (Number(queryParams.get('month')) || 1) - 1,
+      0
+    ),
+    11 // December
   );
 
-  const month = queryParams.has('month')
-    ? year === today.getFullYear()
-      ? Math.min(normalisedMonthParam, today.getMonth())
-      : normalisedMonthParam
-    : today.getMonth();
+  const queryMonth = queryParams.has('month')
+    ? queryYear === currentYear
+      ? Math.min(parsedMonthParam, currentMonth)
+      : parsedMonthParam
+    : currentMonth;
 
-  return new Date(year, month);
+  return new Date(queryYear, queryMonth);
 };
