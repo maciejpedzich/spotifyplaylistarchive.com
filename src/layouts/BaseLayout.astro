@@ -60,6 +60,11 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
         } else {
           document.documentElement.setAttribute('data-theme', 'dark');
         }
+
+        localStorage.setItem(
+          'theme',
+          document.documentElement.getAttribute('data-theme')
+        );
       };
     </script>
   </head>
