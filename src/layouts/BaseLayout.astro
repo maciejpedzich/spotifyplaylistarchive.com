@@ -34,12 +34,33 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
     <meta name="twitter:creator" content="@MaciejPedzich" />
     <meta property="twitter:title" content={metaTagTitle} />
     <meta property="twitter:description" content={description} />
+    <script is:inline>
+      if (localStorage.getItem('theme') === null) {
+        if (
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        ) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } else {
+        document.documentElement.setAttribute(
+          'data-theme',
+          localStorage.getItem('theme')
+        );
+      }
+    </script>
+    <script>
+      import { themeChange } from 'theme-change';
+      themeChange();
+    </script>
   </head>
   <body>
     <header
-      class="navbar bg-base-200 fixed top-0 w-full z-50 border-b-[1px] border-gray-600"
+      class="navbar bg-base-200 fixed top-0 w-full z-50 border-b-[1px] border-base-content border-opacity-20"
     >
-      <div class="navbar-start">
+      <div class="navbar-start lg:w-full">
         <div class="lg:flex-none flex-1">
           <a
             href="/"
@@ -48,8 +69,8 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
             Spotify Playlist Archive
           </a>
         </div>
-        <div class="lg:flex hidden">
-          <NavItems class="menu menu-horizontal p-0" />
+        <div class="lg:flex lg:w-full hidden">
+          <NavItems class="menu menu-horizontal lg:flex-1 p-0" />
         </div>
       </div>
       <div class="navbar-end lg:hidden">
