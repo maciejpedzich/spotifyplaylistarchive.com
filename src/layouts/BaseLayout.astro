@@ -17,27 +17,6 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script is:inline>
-      if (localStorage.getItem('theme') === null) {
-        if (
-          window.matchMedia &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-        ) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-        }
-      } else {
-        document.documentElement.setAttribute(
-          'data-theme',
-          localStorage.getItem('theme')
-        );
-      }
-    </script>
-    <script>
-      import { themeChange } from 'theme-change';
-      themeChange();
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
@@ -55,6 +34,34 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
     <meta name="twitter:creator" content="@MaciejPedzich" />
     <meta property="twitter:title" content={metaTagTitle} />
     <meta property="twitter:description" content={description} />
+    <script is:inline>
+      if (localStorage.getItem('theme') === null) {
+        if (
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        ) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } else {
+        document.documentElement.setAttribute(
+          'data-theme',
+          localStorage.getItem('theme')
+        );
+      }
+
+      const switchColorTheme = () => {
+        const currentTheme =
+          document.documentElement.getAttribute('data-theme');
+
+        if (currentTheme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      };
+    </script>
   </head>
   <body>
     <header

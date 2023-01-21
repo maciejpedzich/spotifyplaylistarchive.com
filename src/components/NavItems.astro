@@ -31,7 +31,11 @@ const { class: _class } = Astro.props as Props;
   </li>
   <div class="md:flex-1"></div>
   <li>
-    <button data-toggle-theme="dark,light" data-act-class="light">
+    <button
+      data-toggle-theme="dark,light"
+      data-act-class="light"
+      onclick="switchColorTheme()"
+    >
       <i class="fa-solid fa-circle-half-stroke"></i>
       Switch color theme
     </button>
