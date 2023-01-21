@@ -17,23 +17,6 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#1EB854" />
-    <link rel="canonical" href={Astro.url.href} />
-    <title>{metaTagTitle}</title>
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#1EB854" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url.href} />
-    <meta property="og:title" content={metaTagTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="twitter:card" content="summary" />
-    <meta property="twitter:url" content={Astro.url.href} />
-    <meta name="twitter:creator" content="@MaciejPedzich" />
-    <meta property="twitter:title" content={metaTagTitle} />
-    <meta property="twitter:description" content={description} />
     <script is:inline>
       if (localStorage.getItem('theme') === null) {
         if (
@@ -55,6 +38,23 @@ const metaTagTitle = `${title} - Spotify Playlist Archive`;
       import { themeChange } from 'theme-change';
       themeChange();
     </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1EB854" />
+    <link rel="canonical" href={Astro.url.href} />
+    <title>{metaTagTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1EB854" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:title" content={metaTagTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content={Astro.url.href} />
+    <meta name="twitter:creator" content="@MaciejPedzich" />
+    <meta property="twitter:title" content={metaTagTitle} />
+    <meta property="twitter:description" content={description} />
   </head>
   <body>
     <header
