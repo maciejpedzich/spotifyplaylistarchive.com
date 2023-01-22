@@ -17,7 +17,7 @@ const { playlist, title, description, errorOccurred } = Astro.props as Props;
 <BaseLayout title={title} description={description}>
   <div
     class:list={[
-      'px-5 text-center flex flex-col gap-5 items-center',
+      'lg:px-32 md:px-16 px-5 text-center flex flex-col gap-5 items-center',
       !errorOccurred ? 'mt-[5.5rem]' : 'w-screen h-screen justify-center'
     ]}
   >

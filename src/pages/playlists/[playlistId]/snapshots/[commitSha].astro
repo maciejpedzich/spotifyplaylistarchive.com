@@ -4,7 +4,7 @@ import formatDuration from 'format-duration';
 
 import PlaylistPageTab from '@/layouts/PlaylistPageTab.astro';
 import { getPlaylistLayoutProps } from '@/utils/getPlaylistLayoutProps';
-import { getFormattedDate } from '@/utils/getFormattedDate';
+import { formatDate } from '@/utils/formatDate';
 
 import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
 
@@ -42,7 +42,7 @@ if (layoutProps.playlist) {
 
 <PlaylistPageTab {...layoutProps}>
   <p class="text-lg">{layoutProps.description}</p>
-  <div class="overflow-x-auto">
+  <div class="lg:max-w-full md:max-w-2xl max-w-sm px-5 overflow-x-auto">
     <table
       class="table datatable mt-4 mb-8 border-[1px] border-b-0 border-r-0 border-base-content border-opacity-20"
     >
@@ -60,17 +60,15 @@ if (layoutProps.playlist) {
           snapshot?.tracks.map((track) => (
             <tr>
               <td>
-                <strong class="lg:hidden">Title</strong>
                 <a href={track.url} target="_blank" rel="noopener noreferrer">
                   {track.name}
                 </a>
               </td>
               <td>
-                <strong class="lg:hidden">Artist(s)</strong>
                 <span>
                   {track.artists.map((artist) => (
                     <a
-                      class="lg:block lg:mb-2 lg:last-of-type:mb-0 mr-2 last-of-type:mr-0"
+                      class="block mb-2 last-of-type:mb-0"
                       href={artist.url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -81,7 +79,6 @@ if (layoutProps.playlist) {
                 </span>
               </td>
               <td>
-                <strong class="lg:hidden">Album</strong>
                 <a
                   href={track.album.url}
                   target="_blank"
@@ -90,14 +87,8 @@ if (layoutProps.playlist) {
                   {track.album.name}
                 </a>
               </td>
-              <td>
-                <strong class="lg:hidden">Date added</strong>
-                {getFormattedDate(track.added_at)}
-              </td>
-              <td>
-                <strong class="lg:hidden">Duration</strong>
-                {formatDuration(track.duration_ms)}
-              </td>
+              <td>{formatDate(track.added_at)}</td>
+              <td>{formatDuration(track.duration_ms)}</td>
             </tr>
           ))
         }
