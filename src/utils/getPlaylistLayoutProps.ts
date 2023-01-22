@@ -17,7 +17,7 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
     );
 
     if (!githubResponse.ok) {
-      throw new Error(githubResponse.status.toString());
+      throw new Error(`GitHub ${githubResponse.status}`);
     }
 
     playlist = (await githubResponse.json()) as PlaylistSnapshot;
@@ -28,7 +28,7 @@ export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
         ? `${playlist.unique_name} (${playlist.original_name})`
         : playlist.original_name;
   } catch (error) {
-    const isNotFoundError = (error as Error).message === '404';
+    const isNotFoundError = (error as Error).message === 'GitHub 404';
 
     errorOccurred = true;
     title = 'Error';
