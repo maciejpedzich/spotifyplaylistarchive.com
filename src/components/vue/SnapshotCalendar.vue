@@ -100,6 +100,7 @@ onMounted(loadSnapshots);
     </div>
   </div>
   <Datepicker
+    class="mb-6"
     v-show="!(loadingSnapshots || errorOccurred)"
     :min-date="minDate"
     :max-date="maxDate"
@@ -165,7 +166,7 @@ onMounted(loadSnapshots);
 }
 
 :deep(div.dp__cell_inner) {
-  @apply md:mx-2 md:my-1.5 mx-1.5 my-1 p-0 hover:bg-transparent hover:text-inherit;
+  @apply md:mx-2 mx-1.5 my-2 p-0 hover:bg-transparent hover:text-inherit;
 }
 
 :deep(div.dp__cell_inner > a) {
