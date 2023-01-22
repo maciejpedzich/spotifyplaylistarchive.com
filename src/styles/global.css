@@ -18,23 +18,39 @@ li > a {
   @apply hover:text-inherit focus:text-primary-content focus:bg-primary;
 }
 
-#snapshot-tracklist th,
-#snapshot-tracklist tr,
-#snapshot-tracklist td {
+a.tab {
+  @apply flex-nowrap whitespace-pre;
+}
+
+a.tab > i {
+  @apply mr-3;
+}
+
+table.datatable th,
+table.datatable tr,
+table.datatable td {
   @apply border-base-content border-opacity-20;
 }
 
-#snapshot-tracklist th {
+table.datatable th {
   @apply rounded-none;
 }
 
-#snapshot-tracklist tr {
+table.datatable tr {
   @apply border-b-[1px];
 }
 
-#snapshot-tracklist th,
-#snapshot-tracklist td {
+table.datatable th,
+table.datatable td {
   @apply border-r-[1px];
+}
+
+table.datatable thead {
+  @apply lg:table-header-group hidden;
+}
+
+table.datatable td {
+  @apply lg:table-cell flex justify-between;
 }
 
 .search-suggestion {
