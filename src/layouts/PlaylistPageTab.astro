@@ -18,7 +18,7 @@ const { playlist, title, description, errorOccurred } = Astro.props as Props;
   <div
     class:list={[
       'px-5 text-center flex flex-col gap-5 items-center',
-      playlist ? 'mt-[5.5rem]' : 'w-screen h-screen justify-center'
+      !errorOccurred ? 'mt-[5.5rem]' : 'w-screen h-screen justify-center'
     ]}
   >
   {
@@ -36,19 +36,11 @@ const { playlist, title, description, errorOccurred } = Astro.props as Props;
           {playlist.owner.name}
         </a>
       </h1>
-      <div class="tabs mb-2">
-        <a class="tab text-base" href={`/playlists/${playlistId}/snapshots`}>
-          <i class="fa-solid fa-calendar mr-3" />
-          Browse snapshots
-        </a>
-        <a class="tab text-base">
-          <i class="fa-solid fa-plus-minus mr-3" />
-          Compare snapshots
-        </a>
-        <a class="tab text-base">
-          <i class="fa-solid fa-chart-line mr-3" />
-          Show statistics
-        </a>
+      <div class="tabs mb-2 w-full flex lg:justify-center justify-start flex-nowrap overflow-x-auto overflow-y-hidden">
+        <a class="tab text-base" href={`/playlists/${playlistId}/snapshots`}><i class="fa-solid fa-calendar" />Browse snapshots</a>
+        <a class="tab text-base"><i class="fa-solid fa-plus-minus" />Compare snapshots</a>
+        <a class="tab text-base"><i class="fa-solid fa-search" />Find a featured track</a>
+        <a class="tab text-base"><i class="fa-solid fa-chart-line" />Show statistics</a>
       </div>
       <slot />
     ) : (
