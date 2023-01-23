@@ -1,0 +1,36 @@
+---
+import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
+
+interface Props {
+  snapshot: PlaylistSnapshot;
+}
+
+const { snapshot } = Astro.props;
+---
+
+<script>
+  import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
+
+  class ExportToJsonLink extends HTMLElement {
+    constructor() {
+      super();
+
+      const snapshot = JSON.parse(this.dataset.snapshot!) as PlaylistSnapshot;
+      const anchor = this.querySelector('a')!;
+
+      anchor.href = URL.createObjectURL(
+        new Blob([JSON.stringify(snapshot, null, '\t')])
+      );
+      anchor.download = `${snapshot.original_name}.json`;
+    }
+  }
+
+  customElements.define('export-to-json-link', ExportToJsonLink);
+</script>
+
+<export-to-json-link data-snapshot={JSON.stringify(snapshot)}>
+  <a class="btn btn-ghost text-base normal-case">
+    <i class="fa-solid fa-file-arrow-down mr-3"></i>
+    Export to JSON
+  </a>
+</export-to-json-link>
