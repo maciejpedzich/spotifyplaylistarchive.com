@@ -65,7 +65,6 @@ export const get: APIRoute = async ({ request, params }) => {
           ];
 
     const body = JSON.stringify(payload);
-    const ETag = payload[0].snapshotId;
 
     const cacheControlDirectives =
       Date.now() > untilDate.getTime()
@@ -77,7 +76,7 @@ export const get: APIRoute = async ({ request, params }) => {
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
         'Cache-Control': `public, ${cacheControlDirectives}`,
-        ETag
+        ETag: etag as string
       }
     });
   } catch (error) {
