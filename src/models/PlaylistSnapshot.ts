@@ -1,5 +1,5 @@
-import type { User } from './user';
-import type { Track } from './track';
+import type { User } from './User';
+import type { Track } from './Track';
 
 export interface PlaylistSnapshot {
   description: string;

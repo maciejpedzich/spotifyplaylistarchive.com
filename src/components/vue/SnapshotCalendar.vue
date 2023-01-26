@@ -4,8 +4,8 @@ import { computed, onBeforeMount, onMounted, ref } from 'vue';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
-import type { SnapshotMeta } from '@/models/snapshot-meta';
-import type { UpdateMonthYearPayload } from '@/models/update-month-year-payload';
+import type { SnapshotMeta } from '@/models/SnapshotMeta';
+import type { UpdateMonthYearPayload } from '@/models/UpdateMonthYearPayload';
 
 import { queryParamsToDate } from '@/utils/queryParamsToDate';
 

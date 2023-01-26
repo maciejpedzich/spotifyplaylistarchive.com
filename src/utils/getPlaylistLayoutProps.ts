@@ -1,7 +1,7 @@
 import { decode } from 'html-entities';
 
 import type { AstroGlobal } from 'astro';
-import type { PlaylistSnapshot } from '../models/playlist-snapshot';
+import type { PlaylistSnapshot } from '../models/PlaylistSnapshot';
 
 export async function getPlaylistLayoutProps(Astro: Readonly<AstroGlobal>) {
   const { playlistId } = Astro.params;

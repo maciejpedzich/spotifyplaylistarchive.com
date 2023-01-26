@@ -4,8 +4,8 @@ import { onMounted, ref, watch } from 'vue';
 import { search } from 'fast-fuzzy';
 import { debounce } from 'debounce';
 
-import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
-import type { SearchSuggestion } from '@/models/search-suggestion';
+import type { PlaylistSnapshot } from '@/models/PlaylistSnapshot';
+import type { SearchSuggestion } from '@/models/SearchSuggestion';
 import { getPlaylistIdFromUrl } from '@/utils/getPlaylistIdFromUrl';
 
 const searchTerm = ref('');

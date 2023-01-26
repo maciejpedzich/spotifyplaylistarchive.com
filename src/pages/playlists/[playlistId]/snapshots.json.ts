@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import type { PlaylistSnapshot } from '@/models/playlist-snapshot';
+import type { PlaylistSnapshot } from '@/models/PlaylistSnapshot';
 
 import { Octokit } from '@octokit/rest';
 import { queryParamsToDate } from '@/utils/queryParamsToDate';
