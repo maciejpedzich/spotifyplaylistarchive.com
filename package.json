@@ -26,7 +26,7 @@
     "fast-fuzzy": "^1.11.2",
     "format-duration": "^2.0.0",
     "html-entities": "^2.3.3",
-    "nuxt": "3.0.0-rc.8",
+    "nuxt": "3.4.3",
     "prettier": "^2.7.1",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
