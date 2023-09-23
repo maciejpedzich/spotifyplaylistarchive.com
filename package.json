@@ -12,5 +12,11 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "nuxt": "^3.7.3"
+  },
+  "dependencies": {
+    "fast-fuzzy": "^1.12.0",
+    "primeflex": "^3.3.1",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.34.1"
   }
 }
