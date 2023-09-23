@@ -86,11 +86,11 @@ const goToSnapshotCalendar = async ({
 
 <template>
   <div
-    class="w-full h-full flex flex-column gap-2 justify-content-center align-items-center"
+    class="p-4 w-full h-full flex flex-column gap-2 justify-content-center align-items-center text-center"
   >
-    <h1 class="m-0 text-6xl">Spotify Playlist Archive</h1>
+    <h1 class="m-0 md:text-6xl text-4xl">Spotify Playlist Archive</h1>
     <div>
-      <p class="mt-0 mb-4 text-2xl">
+      <p class="mt-0 mb-4 md:text-2xl text-xl">
         Browse past versions of thousands of playlists saved over time
       </p>
       <Skeleton v-if="loadingPlaylistRegistry" class="w-full h-3rem" />
