@@ -39,7 +39,7 @@ const {
       name
     }));
   },
-  { default: () => [] }
+  { default: () => [], server: false }
 );
 
 const fuzzySearcher = new Searcher(playlistRegistry.value, {
