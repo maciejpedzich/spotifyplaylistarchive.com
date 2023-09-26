@@ -5,50 +5,45 @@ import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 
 import { Searcher } from 'fast-fuzzy';
-
-import { Playlist } from '@/models/playlist';
 import { getPlaylistIdFromUrl } from '@/utils/getPlaylistIdFromUrl';
 
-interface SearchResult {
+interface RegistryEntry {
   id: string;
-  original_name: string;
-  display_name: string;
+  name: string;
 }
 
 const runtimeConfig = useRuntimeConfig();
 
 const searchTerm = ref('');
-const searchResults = ref<SearchResult[]>([]);
+const minSearchTermLength = ref(3);
+const searchResults = ref<RegistryEntry[]>([]);
 
 const {
   pending: loadingPlaylistRegistry,
   data: playlistRegistry,
   error: playlistRegistryLoadError,
   refresh: reloadPlaylistRegistry
-} = useAsyncData<SearchResult[]>(
+} = useAsyncData<RegistryEntry[]>(
   'playlistRegistry',
   async () => {
-    const registryFileContent = await $fetch<Record<string, Playlist>>(
-      `${runtimeConfig.public.githubRawBaseUrl}/main/playlists/metadata.json`,
-      { parseResponse: JSON.parse }
+    const registryFileContent = await $fetch<Record<string, string>>(
+      `/main/playlists/metadata/metadata-compact.json`,
+      {
+        baseURL: runtimeConfig.public.githubRawBaseUrl,
+        parseResponse: JSON.parse
+      }
     );
 
-    return Object.entries(registryFileContent).map(
-      ([id, { original_name, unique_name }]) => ({
-        id,
-        original_name,
-        display_name:
-          original_name === unique_name
-            ? original_name
-            : `${unique_name} (${original_name})`
-      })
-    );
+    return Object.entries(registryFileContent).map(([id, name]) => ({
+      id,
+      name
+    }));
   },
   { default: () => [] }
 );
 
 const fuzzySearcher = new Searcher(playlistRegistry.value, {
-  keySelector: (obj) => obj.original_name
+  keySelector: (obj) => obj.name
 });
 
 const performSearch = async () => {
@@ -65,8 +60,7 @@ const performSearch = async () => {
     searchResults.value = playlistUrlSearchResults;
   } else {
     // Search term is not a valid playlist URL
-    // Perform a fuzzy search against playlists' original names
-    // Limit results to 10 best matches
+    // Perform a fuzzy search against playlists' names
     const fuzzySearchResults = fuzzySearcher
       .search(searchTerm.value)
       .slice(0, 10);
@@ -78,7 +72,7 @@ const performSearch = async () => {
 const goToSnapshotCalendar = async ({
   value: playlist
 }: {
-  value: SearchResult;
+  value: RegistryEntry;
 }) => {
   await navigateTo(`/playlists/${playlist.id}`);
 };
@@ -114,10 +108,11 @@ const goToSnapshotCalendar = async ({
         v-else
         class="w-full"
         aria-label="Playlist Search Bar"
-        :suggestions="searchResults"
-        :min-length="3"
         placeholder="Start typing a playlist's title or paste its URL"
-        field="display_name"
+        :suggestions="searchResults"
+        :min-length="minSearchTermLength"
+        field="name"
+        :complete-on-focus="searchTerm.length >= minSearchTermLength"
         @complete="performSearch"
         @item-select="goToSnapshotCalendar"
         v-model="searchTerm"
