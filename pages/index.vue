@@ -69,13 +69,15 @@ const performSearch = async () => {
   }
 };
 
-const goToSnapshotCalendar = async ({
+const openSnapshotCalendar = async ({
   value: playlist
 }: {
   value: RegistryEntry;
 }) => {
   await navigateTo(`/playlists/${playlist.id}`);
 };
+
+watch(playlistRegistry, (loadedEntries) => fuzzySearcher.add(...loadedEntries));
 </script>
 
 <template>
@@ -106,15 +108,16 @@ const goToSnapshotCalendar = async ({
       </Message>
       <AutoComplete
         v-else
+        id="search-bar"
         class="w-full"
         aria-label="Playlist Search Bar"
         placeholder="Start typing a playlist's title or paste its URL"
+        field="name"
         :suggestions="searchResults"
         :min-length="minSearchTermLength"
-        field="name"
         :complete-on-focus="searchTerm.length >= minSearchTermLength"
         @complete="performSearch"
-        @item-select="goToSnapshotCalendar"
+        @item-select="openSnapshotCalendar"
         v-model="searchTerm"
       />
     </div>
@@ -122,10 +125,7 @@ const goToSnapshotCalendar = async ({
 </template>
 
 <style scoped>
-:deep(.p-autocomplete-input) {
-  width: 100%;
-}
-
+:deep(.p-autocomplete-input),
 :deep(.p-message-text) {
   width: 100%;
 }
