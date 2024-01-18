@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!searchName || searchName.length < 3) return [];
 
   const readmeFileContent = await $fetch<string>(
-    'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/README.md'
+    'https://raw.githubusercontent.com/mackorone/spotify-playlist-archive/main/playlists/index.md'
   );
   const [, playlistLinksMdList] = readmeFileContent.split(
     /## Playlists \\\([0-9]*\\\)\n\n/gm
